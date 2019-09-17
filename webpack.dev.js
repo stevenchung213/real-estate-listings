@@ -9,7 +9,7 @@ module.exports = merge(common, {
     }
   },
   mode: 'development',
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   cache: true,
   performance: {
     hints: false
@@ -45,6 +45,6 @@ module.exports = merge(common, {
   plugins: [
     new webpack.NamedModulesPlugin(),
     new webpack.NamedChunksPlugin(),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
   ]
 });

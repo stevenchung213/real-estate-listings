@@ -1,4 +1,6 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+require('dotenv').config();
+const webpack = require('webpack'),
+  HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -64,7 +66,7 @@ module.exports = {
       cache: false,
       minify: true,
       // your app title below
-      title: '',
+      title: 'homeSlanger5000',
       meta: [
         {
           charset: 'UTF-8'
@@ -72,16 +74,18 @@ module.exports = {
         {
           name: 'author',
           // your name below
-          content: ''
+          content: 'foolstackDevs-steve'
         },
         {
           name: 'description',
           // your app description below
-          content: ''
+          content: "buy my house damn you!"
         }
       ],
       links: [
         // all CDN links here as strings
+        "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap",
+
       ],
       appMountId: 'root',
       headHtmlSnippet: `<style>body { margin: 0; padding: 0; }</style>`,
@@ -92,5 +96,6 @@ module.exports = {
         //       script tags for all files produced from build
       ]
     }),
+    new webpack.EnvironmentPlugin({ ...process.env })
   ],
 };

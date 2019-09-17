@@ -1,42 +1,33 @@
 require('dotenv').config();
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const path = require('path');
-const compression = require('compression');
+const express = require('express'),
+  helmet = require('helmet'),
+  bodyParser = require('body-parser'),
+  cors = require('cors'),
+  path = require('path'),
+  listings = require('./routes/listings');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-/* MIDDLEWARES */
-// to deal with cross-origin resource sharing
-app.use(cors());
-// support parsing of application/json type post data
-app.use(bodyParser.json());
-// support parsing of application/x-www-form-urlencoded post data
-app.use(bodyParser.urlencoded({ extended: true }));
-// support serving of compressed assets
-app.use(compression());
-// set public distribution folder
-app.use(express.static(path.resolve(__dirname + '/../dist')));
 
-// send our index.html to client upon arrival of our site
+app.use(helmet());
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.resolve(__dirname + '/../dist')));
+app.use('/api/v1/', listings);
+
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname + '/../dist/index.html'));
+  res.sendFile(path.join(__dirname + '/../dist/index.html'), err => {
+    if (err) {
+      res.status(500).send(err);
+    }
+  });
 });
 
-
-/* ACCOUNT FOR END POINTS BELOW
-
-app.get(.......)
-app.post(.......)
-.
-.
-.
-
-*/
-
-// have express listen on defined ${port} which is currently set to 3000 on line 7
-app.listen(port, () => {
-  console.log('express serving the application at http://localhost:' + port);
+app.listen(port, (err) => {
+  if (err) {
+    console.log(err);
+  }
+  console.log('express listening at http://localhost:' + port + '/');
 });
