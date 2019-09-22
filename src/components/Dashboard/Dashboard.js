@@ -15,7 +15,7 @@ import PropertyDetails from "./Details";
 import Import from "./Import";
 import Info from "./Info";
 import { FullContainer } from '../styles/';
-import { DashboardContent, FlexGrowContainer } from "./Import.styled";
+import { DashboardContent } from "./Import.styled";
 
 const drawerWidth = 180;
 
@@ -72,6 +72,10 @@ const Dashboard = props => {
   const { user, setErrors, setModal, history } = props;
   const { username } = user;
   console.log(props)
+
+  const handlePinClick = () => {
+    // update state as well after modifying a property
+  };
 
   // USEEFFECT to call API for properties data on component mount
 
