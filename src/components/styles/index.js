@@ -26,12 +26,3 @@ export const CenteredHeader1 = styled.h1`
 export const CenteredHeader2 = styled.h2`
   text-align: center;
 `;
-
-export const FloatRightDiv = styled.div`
-  float: right;
-`;
-
-export const LoadingContainerDiv = styled.div`
-  margin-bottom: 4px;
-  height: 4px;
-`;

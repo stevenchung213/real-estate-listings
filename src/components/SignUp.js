@@ -37,7 +37,7 @@ const styles = theme => ({
 const SignUp = props => {
 
   const api = process.env.API || `http://localhost:3000/api/v1`;
-  const { classes, setErrors, setModal } = props;
+  const { classes, setErrors, setErrorModal } = props;
 
   const [userinfo, setUserinfo] = useState({
     username: '',
@@ -63,9 +63,9 @@ const SignUp = props => {
     if (!username.includes('.')) {
       setErrors({
         type: 'Invalid Username',
-        message: `Please use the slack naming convention with lower-cased letters combined with a '.'\n\nExample:\njane.smith`
+        message: `Please use the " firtname.lastname " naming convention with ALL LOWER-CASED letters combined with a " . "\n\nExample:\njane.smith`
       });
-      setModal(true);
+      setErrorModal(true);
       return;
     }
 
@@ -78,9 +78,9 @@ const SignUp = props => {
     if (!lowerCasedLetters.test(firstName) || !lowerCasedLetters.test(lastName) || (middleName && !lowerCasedLetters.test(middleName))) {
       setErrors({
         type: 'Invalid Username',
-        message: `Please use the slack naming convention with LOWER-CASED letters combined with a '.'\n\nExample:\njane.smith`
+        message: `Please use the " firtname.lastname " naming convention with ALL LOWER-CASED letters combined with a ' . '\n\nExample:\njane.smith`
       });
-      setModal(true);
+      setErrorModal(true);
       return;
     }
     // password length of at least 6 chars
@@ -89,7 +89,7 @@ const SignUp = props => {
         type: 'Invalid Password',
         message: `Password must be at least 6 characters long`
       });
-      setModal(true);
+      setErrorModal(true);
       return;
     }
 
@@ -116,27 +116,27 @@ const SignUp = props => {
         if (resp.message) {
           setErrors({
             type: 'Username Exists',
-            message: `This account already exists\nYou may try adding a middle name in the case of students with same names\n\nExample:\njane.alice.smith`
+            message: `This username already exists\nYou may try adding a middle name\n\nExample:\njane.alice.smith`
           });
-          setModal(true);
+          setErrorModal(true);
           return;
         }
         // if some other error
         if (resp.error) {
           setErrors({
             type: 'Unknown Error',
-            message: `Please contact your supervising staff`
+            message: `Please contact your engineering team`
           });
-          setModal(true);
+          setErrorModal(true);
           return;
         }
         // upon success
         // alert(`account creation successful\nplease log in`);
         setErrors({
           type: 'Account Created',
-          message: `Redirecting to log in`
+          message: `Account created!  Redirecting to log in...`
         });
-        setModal(true);
+        setErrorModal(true);
         setTimeout(() => {
           setUserinfo(currentState => ({
             ...currentState,
@@ -154,7 +154,6 @@ const SignUp = props => {
       :
       <FullContainer id={`signup-container`}>
         <ColumnFlexBox>
-          {/*<CenteredHeader2>Agent</CenteredHeader2>*/}
           <CenteredHeader1>Agent Registration</CenteredHeader1>
           <ColumnFlexBox id={`signup-input-container`}>
             <form onSubmit={submit}>

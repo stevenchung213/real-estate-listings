@@ -22,7 +22,7 @@ const Main = (props) => {
     token: ''
   });
 
-  const [modal, setModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
 
   const [errors, setErrors] = useState({
     type: '',
@@ -86,7 +86,7 @@ const Main = (props) => {
             loggingIn: false,
             loggedIn: false
           }));
-          setModal(true);
+          setErrorModal(true);
         }
       })
       .catch(err => {
@@ -102,15 +102,15 @@ const Main = (props) => {
         />
         <Route path={`/signup`} render={() =>
           <SignUp setErrors={setErrors}
-                  setModal={setModal}/>}
+                  setErrorModal={setErrorModal}/>}
         />
         <ProtectedRoute path={`/dashboard`} component={Dashboard}
-                        setErrors={setErrors} setModal={setModal}
+                        setErrors={setErrors} setErrorModal={setErrorModal}
                         loggedIn={userinfo.loggedIn} user={userinfo}
         />
         <Route component={NoMatch}/>
       </Switch>
-      <ErrorModal openModal={modal} closeModal={() => setModal(false)}
+      <ErrorModal openModal={errorModal} closeModal={() => setErrorModal(false)}
                   errorType={errors.type} errorMessage={errors.message}
       />
     </FullContainer>

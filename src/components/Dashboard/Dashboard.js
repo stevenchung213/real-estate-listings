@@ -15,7 +15,8 @@ import PropertyDetails from "./Details";
 import Import from "./Import";
 import Info from "./Info";
 import { FullContainer } from '../styles/';
-import { DashboardContent } from "./Import.styled";
+import { DashboardContent } from './Dashboard.styled';
+import XLSX from 'xlsx';
 
 const drawerWidth = 180;
 
@@ -36,13 +37,14 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(2),
+    padding: theme.spacing(0),
   },
   toolbar: theme.mixins.toolbar,
 }));
 
 const Dashboard = props => {
 
+  const api = process.env.API || `http://localhost:3000/api/v1`;
   const classes = useStyles();
   const navLinks = [
     {
@@ -63,21 +65,52 @@ const Dashboard = props => {
     {
       name: 'Import',
       view: 'import',
-      icon: <Add/>
+      icon: <Add />
     }
   ];
 
   const [view, setView] = useState('map');
+  const [dashModal, setDashModal] = useState(false);
 
-  const { user, setErrors, setModal, history } = props;
+  const { user, setErrors, setErrorModal, history } = props;
   const { username } = user;
   console.log(props)
+
+  const handlePreview = (files, e) => {
+    e.preventDefault();
+    // convert xls to json then display as key/value pairs
+    console.log(files)
+    console.log(XLSX)
+    const reader = new FileReader();
+    const rABS = !!reader.readAsBinaryString;
+    reader.onload = (ev) => {
+      /* Parse data */
+      console.log('IMPORT.reader.ev\n', ev);
+      const bstr = ev.target.result;
+      const wb = XLSX.read(bstr, { type: rABS ? 'binary' : 'array' });
+      /* Get first worksheet */
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      /* Convert array of arrays */
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      /* Update state */
+      console.log('IMPORT.data\n', data);
+    };
+    if (rABS) {
+      reader.readAsBinaryString(files);
+    } else {
+      reader.readAsArrayBuffer(files);
+    }
+
+    // open property preview modal
+    // user should be able to modify any values before sending to database
+  };
 
   const handlePinClick = () => {
     // update state as well after modifying a property
   };
 
-  // USEEFFECT to call API for properties data on component mount
+  // USEEFFECT to call API for properties data on mount
 
   return (
     <FullContainer
@@ -116,7 +149,7 @@ const Dashboard = props => {
         {view === 'map' && <PropertyMap />}
         {view === 'properties' && <PropertyDetails />}
         {view === 'info' && <Info />}
-        {view === 'import' && <Import />}
+        {view === 'import' && <Import handlePreview={handlePreview} />}
       </DashboardContent>
     </FullContainer>
   );

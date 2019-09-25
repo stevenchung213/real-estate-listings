@@ -1,32 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Typography from "@material-ui/core/Typography";
 import Button from '@material-ui/core/Button';
-import { DropzoneContainer, FlexContainer } from "./Import.styled";
+import { FlexContainer } from "./Dashboard.styled";
+import { DropzoneContainer } from "./Import.styled";
 
-const Import = (props) => {
+const Import = props => {
+
+  const { handlePreview } = props;
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
 
-  const files = acceptedFiles.map(file => (
-    <li key={file.path}>
-      {file.path} - {file.size} bytes
-    </li>
-  ));
-
-  const upload = (files, e) => {
-    e.preventDefault();
-    console.log(files)
-    // call API, send over files for xls to json conversion
-  };
-
   return (
-    <FlexContainer id="import-container">
-        <DropzoneContainer {...getRootProps({ className: 'dropzone' })}>
-          <input {...getInputProps()} />
-          <Typography align="center">
-            Drag 'n' drop one or multiple files here, or click to select files
-          </Typography>
-        </DropzoneContainer>
+    <FlexContainer
+      id="import-container"
+      padding={'8px'}
+    >
+      <DropzoneContainer
+        id="dropzone-container"
+        {...getRootProps({ className: 'dropzone' })}
+        style={{ cursor: 'pointer' }}
+      >
+        <input {...getInputProps()} />
+        <Typography align="center">
+          Drag 'n' drop one or multiple files here, or click to select files
+        </Typography>
+      </DropzoneContainer>
 
       <FlexContainer
         id="imported-files-container"
@@ -35,7 +33,16 @@ const Import = (props) => {
         <Typography>
           <b>File(s) to import:</b>
         </Typography>
-        <ul>{files}</ul>
+        <ul>
+          {
+            acceptedFiles.length > 0 &&
+            acceptedFiles.map(file => (
+              <li key={file.path}>
+                {file.path} - {file.size} bytes
+              </li>
+            ))
+          }
+        </ul>
       </FlexContainer>
 
       <FlexContainer
@@ -46,9 +53,12 @@ const Import = (props) => {
           color="primary"
           size="large"
           fullWidth
-          onClick={(e) => {upload(acceptedFiles, e)}}
+          disabled={acceptedFiles.length === 0}
+          onClick={(e) => {
+            handlePreview(acceptedFiles[0], e)
+          }}
         >
-          Import
+          Preview
         </Button>
       </FlexContainer>
     </FlexContainer>

@@ -2,11 +2,11 @@ import React from 'react';
 import { Route, Redirect } from "react-router-dom";
 
 
-const ProtectedRoute = ({ component: Component, loggedIn, setErrors, setModal, ...rest }) => {
+const ProtectedRoute = ({ component: Component, loggedIn, setErrors, setErrorModal, ...rest }) => {
   console.log(loggedIn)
   if (loggedIn) {
     return <Route {...rest} render={props =>
-      <Component {...props} setErrors={setErrors} setModal={setModal} {...rest}/>}
+      <Component {...props} setErrors={setErrors} setErrorModal={setErrorModal} {...rest}/>}
     />
   } else {
     // setErrors({
