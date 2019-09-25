@@ -17,6 +17,8 @@ import Info from "./Info";
 import { FullContainer } from '../styles/';
 import { DashboardContent } from './Dashboard.styled';
 import XLSX from 'xlsx';
+import DashboardModal from "./DashboardModal";
+import ErrorModal from "../ErrorModal";
 
 const drawerWidth = 180;
 
@@ -69,12 +71,17 @@ const Dashboard = props => {
     }
   ];
 
-  const [view, setView] = useState('map');
-  const [dashModal, setDashModal] = useState(false);
-
   const { user, setErrors, setErrorModal, history } = props;
   const { username } = user;
   console.log(props)
+
+  const [view, setView] = useState('map');
+  const [dashModal, setDashModal] = useState(false);
+  const [dashModalData, setDashModalData] = useState({
+    type: '',
+    data: null,
+  });
+
 
   const handlePreview = (files, e) => {
     e.preventDefault();
@@ -92,9 +99,15 @@ const Dashboard = props => {
       const wsname = wb.SheetNames[0];
       const ws = wb.Sheets[wsname];
       /* Convert array of arrays */
-      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      const jsonSheet = XLSX.utils.sheet_to_json(ws, { header: 1 });
       /* Update state */
-      console.log('IMPORT.data\n', data);
+      const filtered = jsonSheet.filter(row => row.length > 0);
+      console.log('IMPORT.data\n', filtered);
+      setDashModalData({
+        type: 'preview',
+        data: filtered
+      });
+      setDashModal(true);
     };
     if (rABS) {
       reader.readAsBinaryString(files);
@@ -116,7 +129,6 @@ const Dashboard = props => {
     <FullContainer
       id={`dashboard-container`}
       className={classes.root}
-      padding={0}
     >
       <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
@@ -151,6 +163,10 @@ const Dashboard = props => {
         {view === 'info' && <Info />}
         {view === 'import' && <Import handlePreview={handlePreview} />}
       </DashboardContent>
+      <DashboardModal
+        openModal={dashModal} closeModal={() => setDashModal(false)}
+        modalType={dashModalData.type} modalData={dashModalData.data}
+      />
     </FullContainer>
   );
 };

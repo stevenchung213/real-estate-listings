@@ -2,12 +2,15 @@ import React from 'react';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
+import { PreviewGrid } from "./DashboardModal.styled";
 
 const useStyles = makeStyles(theme => ({
   paper: {
     margin: 'auto',
     marginTop: '10%',
-    width: 350,
+    width: 'auto',
+    maxWidth: '80%',
+    overflow: 'auto',
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
     padding: theme.spacing(4),
@@ -15,30 +18,41 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const DashboardModal = ({ modalType, modalMessage, openModal, closeModal }) => {
+const DashboardModal = ({ modalType, modalData, openModal, closeModal }) => {
 
   const classes = useStyles();
-  const split = modalMessage.split('\n')
+  let content;
+  if (modalType === 'preview') {
+    // display grid with xls values
+    // content = JSON.stringify(modalData);
+    content = (
+      <PreviewGrid
+        gridTemplateColumns={`repeat(${modalData[0].length}, minmax(140px, 1fr))`}
+      >
+        {
+          modalData[0].map(field => (
+            <div key={`${field}-field`}>
+              <Typography variant="h5" className="sheet-fields" align={`center`}>
+                {field.split(' ').join('_').toLowerCase()}
+              </Typography>
+            </div>
+          ))
+        }
+      </PreviewGrid>
+    );
+  }
+
   return (
-    <Modal aria-labelledby="dashboard-modal"
-           aria-describedby="dashboard-modal-description"
-           open={openModal}
-           onClose={closeModal}
+    <Modal
+      id="dashboard-modal-container"
+      aria-labelledby="dashboard-modal"
+      aria-describedby="dashboard-modal-description"
+      open={openModal}
+      onClose={closeModal}
+      // disableBackdropClick
     >
       <div className={classes.paper}>
-        <Typography variant="h6" id="error-modal-title" align={`center`}>
-          {modalType}
-        </Typography>
-        <br />
-        {
-          split.map((line, i) =>
-            <div key={`line${i + 1}`}>
-              <Typography variant="subtitle1" id="error-modal-description">
-                {line}
-              </Typography>
-              <br />
-            </div>)
-        }
+        {content}
       </div>
     </Modal>
   );
