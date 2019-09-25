@@ -28,18 +28,18 @@ router.use((req, res, next) => {
 router.post('/register', (req, res) => {
   console.log(`post request from ${req.originalUrl}\n at /register`, req.body);
   const { username, password } = req.body;
-  // check if student exists in database
+  // check if user exists in database
   Users.find({ username }).exec()
     .then(resp => {
-      // if student does NOT exist
+      // if user does NOT exist
       if (resp.length === 0) {
-        // create new student document
+        // create new user document
         const newUser = new Users({ username, password });
         newUser.save()
           .then(() => res.status(200).json({ success: 'registration', username }))
           .catch(err => console.log(`error: saving new user\n${err}`));
       } else {
-        // if student EXISTS
+        // if user EXISTS
         res.status(400).json({
           message: `username already exists:\n ${username}`
         });
@@ -55,7 +55,7 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
   console.log(`post request from ${req.originalUrl} at /login\n`, req.body);
-  const { username, password, present } = req.body;
+  const { username, password } = req.body;
   Users.findOne({ username }).exec()
     .then((user) => {
       user.comparePassword(password, (err, isMatch) => {
@@ -89,17 +89,15 @@ router.post('/login', (req, res) => {
 //       res.status(403).json({ message: `Token might have expired`, error: err });
 //     } else {
 //       console.log('authorized data\n', authorizedData)
-//       const { studentID } = authorizedData;
-//       User.findOne({ _id: studentID }).exec()
+//       const { userID } = authorizedData;
+//       User.findOne({ _id: userID }).exec()
 //         .then(doc => {
-//           const { _id, username, attendance, cohort } = doc;
-//           const studentData = {
-//             studentID: _id,
+//           const { _id, username } = doc;
+//           const userData = {
+//             userID: _id,
 //             username,
-//             cohort,
-//             attendance: formatAttendance(attendance)
 //           };
-//           res.status(200).json(studentData)
+//           res.status(200).json(userData)
 //         })
 //         .catch(err => console.log(`error: database query\n`, err));
 //       // res.status(200).json({ message: `Successful verification at route /data`, data: authorizedData });

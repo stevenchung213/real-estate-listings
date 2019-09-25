@@ -6,9 +6,8 @@ import Button from "@material-ui/core/Button";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Done from '@material-ui/icons/Done';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import School from '@material-ui/icons/School';
 import VpnKey from '@material-ui/icons/VpnKey';
-import { CenteredHeader1, CenteredHeader2, ColumnFlexBox, FullContainer } from "./styles";
+import { CenteredHeader1, ColumnFlexBox, FullContainer } from "./styles";
 
 const styles = theme => ({
   icon: {
@@ -57,7 +56,7 @@ const SignUp = props => {
   const submit = (e) => {
     e.preventDefault();
     console.log('init\n', userinfo)
-    const { username, password, cohort } = userinfo;
+    const { username, password } = userinfo;
     // Validation
     // requires '.' between first and last name
     if (!username.includes('.')) {
@@ -99,11 +98,11 @@ const SignUp = props => {
     }));
 
     const url = `${api}/register`;
-    const student = { username, password };
+    const user = { username, password };
 
     fetch(url, {
       method: 'POST',
-      body: JSON.stringify(student),
+      body: JSON.stringify(user),
       headers: { "Content-Type": "application/json" }
     })
       .then(resp => resp.json())
@@ -150,7 +149,7 @@ const SignUp = props => {
   };
 
   return (
-    userinfo.complete ? <Redirect to={`/`}/>
+    userinfo.complete ? <Redirect to={`/`} />
       :
       <FullContainer id={`signup-container`}>
         <ColumnFlexBox>
@@ -158,36 +157,63 @@ const SignUp = props => {
           <ColumnFlexBox id={`signup-input-container`}>
             <form onSubmit={submit}>
               <div className={classes.margin}>
-                <Grid container spacing={1} alignItems="flex-end">
-                  <Grid item className={classes.icon}>
-                    <AccountCircle fontSize={`large`}/>
+                <Grid
+                  container
+                  spacing={1}
+                  alignItems="flex-end"
+                >
+                  <Grid
+                    item
+                    className={classes.icon}
+                  >
+                    <AccountCircle fontSize={`large`} />
                   </Grid>
                   <Grid item>
-                    <TextField id="signup-username-input" label="username"
-                               className={classes.textField} required
-                               name={`username`} onChange={handleChange}
-                               helperText={`first.last (lower-cased)`}/>
+                    <TextField
+                      id="signup-username-input"
+                      label="username"
+                      className={classes.textField}
+                      required
+                      name={`username`}
+                      onChange={handleChange}
+                      helperText={`first.last (lower-cased)`}
+                    />
                   </Grid>
                 </Grid>
               </div>
               <div className={classes.margin}>
-                <Grid container spacing={1} alignItems="flex-end">
-                  <Grid item className={classes.icon}>
-                    <VpnKey fontSize={`large`}/>
+                <Grid
+                  container spacing={1}
+                  alignItems="flex-end"
+                >
+                  <Grid
+                    item
+                    className={classes.icon}
+                  >
+                    <VpnKey fontSize={`large`} />
                   </Grid>
                   <Grid item>
-                    <TextField required id="password-username-input" label="password"
-                               className={classes.textField}
-                               name={`password`} onChange={handleChange}
-                               helperText={`at least 6 characters`}/>
+                    <TextField
+                      required id="password-username-input"
+                      label="password"
+                      className={classes.textField}
+                      name={`password`}
+                      onChange={handleChange}
+                      helperText={`at least 6 characters`}
+                    />
                   </Grid>
                 </Grid>
               </div>
-              <br/>
-              <Button variant="contained" color="default" type={`submit`}
-                      fullWidth={true} disabled={userinfo.submitting}>
+              <br />
+              <Button
+                variant="contained"
+                color="default"
+                type={`submit`}
+                fullWidth={true}
+                disabled={userinfo.submitting}
+              >
                 sign up
-                <Done className={classes.rightIcon}/>
+                <Done className={classes.rightIcon} />
               </Button>
             </form>
           </ColumnFlexBox>

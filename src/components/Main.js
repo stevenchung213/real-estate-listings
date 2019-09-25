@@ -18,7 +18,6 @@ const Main = (props) => {
     username: '',
     loggingIn: false,
     loggedIn: false,
-    cohort: 0,
     token: ''
   });
 
@@ -47,7 +46,7 @@ const Main = (props) => {
     console.log(userObj)
     const url = `${api}/login`;
     const { username, password } = userObj;
-    const user = { username, password, present: new Date().toLocaleString() };
+    const user = { username, password };
 
     fetch(url, {
       method: 'POST',
@@ -61,7 +60,6 @@ const Main = (props) => {
           setUserinfo({
             userID: resp.userID,
             username: resp.username,
-            cohort: resp.cohort,
             token: resp.token,
             loggingIn: false,
             loggedIn: true
@@ -69,7 +67,6 @@ const Main = (props) => {
           const cookie = {
             userID: resp.userID,
             username: resp.username,
-            cohort: resp.cohort,
             token: resp.token,
             loggingIn: false,
             loggedIn: true

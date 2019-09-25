@@ -87,21 +87,20 @@ const Dashboard = props => {
     e.preventDefault();
     // convert xls to json then display as key/value pairs
     console.log(files)
-    console.log(XLSX)
     const reader = new FileReader();
     const rABS = !!reader.readAsBinaryString;
     reader.onload = (ev) => {
       /* Parse data */
-      console.log('IMPORT.reader.ev\n', ev);
       const bstr = ev.target.result;
       const wb = XLSX.read(bstr, { type: rABS ? 'binary' : 'array' });
       /* Get first worksheet */
       const wsname = wb.SheetNames[0];
       const ws = wb.Sheets[wsname];
       /* Convert array of arrays */
-      const jsonSheet = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      // const jsonSheet = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      const jsonSheet = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
       /* Update state */
-      const filtered = jsonSheet.filter(row => row.length > 0);
+      const filtered = jsonSheet.filter(row => row[0]);
       console.log('IMPORT.data\n', filtered);
       setDashModalData({
         type: 'preview',
@@ -114,9 +113,11 @@ const Dashboard = props => {
     } else {
       reader.readAsArrayBuffer(files);
     }
+  };
 
-    // open property preview modal
-    // user should be able to modify any values before sending to database
+  const submitImport = (e) => {
+    e.preventDefault();
+    console.log(e)
   };
 
   const handlePinClick = () => {
@@ -164,8 +165,11 @@ const Dashboard = props => {
         {view === 'import' && <Import handlePreview={handlePreview} />}
       </DashboardContent>
       <DashboardModal
-        openModal={dashModal} closeModal={() => setDashModal(false)}
-        modalType={dashModalData.type} modalData={dashModalData.data}
+        openModal={dashModal}
+        closeModal={() => setDashModal(false)}
+        modalType={dashModalData.type}
+        modalData={dashModalData.data}
+        submitImport={submitImport}
       />
     </FullContainer>
   );

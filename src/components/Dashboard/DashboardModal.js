@@ -3,6 +3,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
 import { PreviewGrid } from "./DashboardModal.styled";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -18,27 +19,55 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const DashboardModal = ({ modalType, modalData, openModal, closeModal }) => {
+const DashboardModal = props => {
 
+  const { modalType, modalData, openModal, closeModal, submitImport } = props;
   const classes = useStyles();
   let content;
+
   if (modalType === 'preview') {
-    // display grid with xls values
-    // content = JSON.stringify(modalData);
     content = (
-      <PreviewGrid
-        gridTemplateColumns={`repeat(${modalData[0].length}, minmax(140px, 1fr))`}
-      >
-        {
-          modalData[0].map(field => (
-            <div key={`${field}-field`}>
-              <Typography variant="h5" className="sheet-fields" align={`center`}>
-                {field.split(' ').join('_').toLowerCase()}
-              </Typography>
-            </div>
-          ))
-        }
-      </PreviewGrid>
+      <form onSubmit={submitImport}>
+        <PreviewGrid
+          gridTemplateColumns={`repeat(${modalData[0].length}, minmax(140px, 1fr))`}
+        >
+          {
+            modalData.map((row, i) => (
+              row.map(col => (
+                i === 0 ? (
+                    <Typography
+                      variant="subtitle2"
+                      className={`sheet-fields`}
+                    >
+                      {col.split(' ').join('_').toLowerCase()}
+                    </Typography>
+                  )
+                  :
+                  (
+                    <Typography
+                      variant="body2"
+                      className={`sheet-values`}
+                      noWrap
+                    >
+                      {
+                        col ? col : 'n/a'
+                      }
+                    </Typography>
+                  )
+              ))
+            ))
+          }
+        </PreviewGrid>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            variant="contained"
+            color="default"
+            type={`submit`}
+          >
+            submit
+          </Button>
+        </div>
+      </form>
     );
   }
 
@@ -49,7 +78,7 @@ const DashboardModal = ({ modalType, modalData, openModal, closeModal }) => {
       aria-describedby="dashboard-modal-description"
       open={openModal}
       onClose={closeModal}
-      // disableBackdropClick
+      disableBackdropClick={modalType === 'preview'}
     >
       <div className={classes.paper}>
         {content}
