@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { PreviewGrid } from './DashboardModal.styled';
+import { PreviewGrid, PreviewContainer, StyledModal } from './DashboardModal.styled';
 
 const useStyles = makeStyles(theme => ({
   paper: {
     margin: 'auto',
-    marginTop: '10%',
-    width: 'auto',
-    maxWidth: '80%',
-    overflow: 'auto',
+    width: '100%',
+    maxWidth: '80vw',
+    height: '100%',
+    maxHeight: '80vh',
+    overflow: 'hidden',
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
     padding: theme.spacing(4),
@@ -38,19 +38,19 @@ const DashboardModal = (props) => {
     objToUpdate[e.target.name] = e.target.value;
     copy[i] = objToUpdate;
     setImportInputs(copy);
-    console.log(e.target.value)
+    console.log(e.target.value);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
+    // e.preventDefault();
     console.log(importInputs);
     // POST to api and save property into database
   };
 
   let content;
-  if (modalType === 'preview') {
+  if (modalType === 'import_preview') {
     content = (
-      <form onSubmit={handleSubmit}>
+      <PreviewContainer id={`import-preview-container`}>
         <PreviewGrid
           gridTemplateColumns={`repeat(${Object.keys(modalData[0]).length}, minmax(200px, 1fr))`}
         >
@@ -76,11 +76,13 @@ const DashboardModal = (props) => {
                 margin="normal"
                 style={{ overflowX: 'hidden' }}
                 defaultValue={entry[1] ? entry[1] : 'n/a'}
-                onChange={(e) => { handleChange(e, i); }}
+                onChange={(e) => {
+                  handleChange(e, i);
+                }}
               >
                 {
-                    entry[1] ? entry[1] : 'n/a'
-                  }
+                  entry[1] ? entry[1] : 'n/a'
+                }
               </TextField>
             ))))
           }
@@ -90,26 +92,27 @@ const DashboardModal = (props) => {
           color="default"
           type="submit"
           fullWidth
+          onClick={handleSubmit}
         >
           submit
         </Button>
-      </form>
+      </PreviewContainer>
     );
   }
 
   return (
-    <Modal
-      id="dashboard-modal-container"
+    <StyledModal
+      id="dashboard-modal-backdrop-container"
       aria-labelledby="dashboard-modal"
       aria-describedby="dashboard-modal-description"
       open={openModal}
       onClose={closeModal}
-      disableBackdropClick={modalType === 'preview'}
+      disableBackdropClick={modalType === 'import_preview'}
     >
       <div className={classes.paper}>
         {content}
       </div>
-    </Modal>
+    </StyledModal>
   );
 };
 

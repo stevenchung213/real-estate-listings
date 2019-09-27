@@ -122,7 +122,7 @@ const Dashboard = (props) => {
 
       console.log('IMPORT.data\n', formattedData);
       setDashModalData({
-        type: 'preview',
+        type: 'import_preview',
         data: formattedData,
       });
       setDashModal(true);
