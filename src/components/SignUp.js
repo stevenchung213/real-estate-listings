@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import withStyles from "@material-ui/core/styles/withStyles";
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import withStyles from '@material-ui/core/styles/withStyles';
 import Done from '@material-ui/icons/Done';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import VpnKey from '@material-ui/icons/VpnKey';
-import { CenteredHeader1, ColumnFlexBox, FullContainer } from "./styles";
+import { CenteredHeader1, ColumnFlexBox, FullContainer } from './styles';
 
 const styles = theme => ({
   icon: {
-    marginBottom: 14
+    marginBottom: 14,
   },
   margin: {
     margin: theme.spacing(1),
@@ -33,36 +33,35 @@ const styles = theme => ({
   },
 });
 
-const SignUp = props => {
-
-  const api = process.env.API || `http://localhost:3000/api/v1`;
+const SignUp = (props) => {
+  const api = process.env.API || 'http://localhost:3000/api/v1';
   const { classes, setErrors, setErrorModal } = props;
 
   const [userinfo, setUserinfo] = useState({
     username: '',
     password: '',
     submitting: false,
-    complete: false
+    complete: false,
   });
 
   const handleChange = (e) => {
     e.persist();
     setUserinfo(currentState => ({
       ...currentState,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
   const submit = (e) => {
     e.preventDefault();
-    console.log('init\n', userinfo)
+    console.log('init\n', userinfo);
     const { username, password } = userinfo;
     // Validation
     // requires '.' between first and last name
     if (!username.includes('.')) {
       setErrors({
         type: 'Invalid Username',
-        message: `Please use the " firtname.lastname " naming convention with ALL LOWER-CASED letters combined with a " . "\n\nExample:\njane.smith`
+        message: 'Please use the " firtname.lastname " naming convention with ALL LOWER-CASED letters combined with a " . "\n\nExample:\njane.smith',
       });
       setErrorModal(true);
       return;
@@ -77,7 +76,7 @@ const SignUp = props => {
     if (!lowerCasedLetters.test(firstName) || !lowerCasedLetters.test(lastName) || (middleName && !lowerCasedLetters.test(middleName))) {
       setErrors({
         type: 'Invalid Username',
-        message: `Please use the " firtname.lastname " naming convention with ALL LOWER-CASED letters combined with a ' . '\n\nExample:\njane.smith`
+        message: 'Please use the " firtname.lastname " naming convention with ALL LOWER-CASED letters combined with a \' . \'\n\nExample:\njane.smith',
       });
       setErrorModal(true);
       return;
@@ -86,7 +85,7 @@ const SignUp = props => {
     if (password.length < 6) {
       setErrors({
         type: 'Invalid Password',
-        message: `Password must be at least 6 characters long`
+        message: 'Password must be at least 6 characters long',
       });
       setErrorModal(true);
       return;
@@ -94,7 +93,7 @@ const SignUp = props => {
 
     setUserinfo(currentState => ({
       ...currentState,
-      submitting: true
+      submitting: true,
     }));
 
     const url = `${api}/register`;
@@ -103,19 +102,19 @@ const SignUp = props => {
     fetch(url, {
       method: 'POST',
       body: JSON.stringify(user),
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     })
       .then(resp => resp.json())
-      .then(resp => {
+      .then((resp) => {
         setUserinfo(currentState => ({
           ...currentState,
-          submitting: false
+          submitting: false,
         }));
         // if account exists
         if (resp.message) {
           setErrors({
             type: 'Username Exists',
-            message: `This username already exists\nYou may try adding a middle name\n\nExample:\njane.alice.smith`
+            message: 'This username already exists\nYou may try adding a middle name\n\nExample:\njane.alice.smith',
           });
           setErrorModal(true);
           return;
@@ -124,7 +123,7 @@ const SignUp = props => {
         if (resp.error) {
           setErrors({
             type: 'Unknown Error',
-            message: `Please contact your engineering team`
+            message: 'Please contact your engineering team',
           });
           setErrorModal(true);
           return;
@@ -133,92 +132,95 @@ const SignUp = props => {
         // alert(`account creation successful\nplease log in`);
         setErrors({
           type: 'Account Created',
-          message: `Account created!  Redirecting to log in...`
+          message: 'Account created!  Redirecting to log in...',
         });
         setErrorModal(true);
         setTimeout(() => {
           setUserinfo(currentState => ({
             ...currentState,
-            complete: true
+            complete: true,
           }));
-        }, 1000)
+        }, 1000);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
 
   return (
-    userinfo.complete ? <Redirect to={`/`} />
-      :
-      <FullContainer id={`signup-container`}>
-        <ColumnFlexBox>
-          <CenteredHeader1>Agent Registration</CenteredHeader1>
-          <ColumnFlexBox id={`signup-input-container`}>
-            <form onSubmit={submit}>
-              <div className={classes.margin}>
-                <Grid
-                  container
-                  spacing={1}
-                  alignItems="flex-end"
-                >
+    userinfo.complete ? <Redirect to="/" />
+      : (
+        <FullContainer id="signup-container">
+          <ColumnFlexBox>
+            <CenteredHeader1>Agent Registration</CenteredHeader1>
+            <ColumnFlexBox id="signup-input-container">
+              <form onSubmit={submit}>
+                <div className={classes.margin}>
                   <Grid
-                    item
-                    className={classes.icon}
+                    container
+                    spacing={1}
+                    alignItems="flex-end"
                   >
-                    <AccountCircle fontSize={`large`} />
+                    <Grid
+                      item
+                      className={classes.icon}
+                    >
+                      <AccountCircle fontSize="large" />
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                        id="signup-username-input"
+                        label="username"
+                        className={classes.textField}
+                        required
+                        name="username"
+                        onChange={handleChange}
+                        helperText="first.last (lower-cased)"
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    <TextField
-                      id="signup-username-input"
-                      label="username"
-                      className={classes.textField}
-                      required
-                      name={`username`}
-                      onChange={handleChange}
-                      helperText={`first.last (lower-cased)`}
-                    />
-                  </Grid>
-                </Grid>
-              </div>
-              <div className={classes.margin}>
-                <Grid
-                  container spacing={1}
-                  alignItems="flex-end"
-                >
+                </div>
+                <div className={classes.margin}>
                   <Grid
-                    item
-                    className={classes.icon}
+                    container
+                    spacing={1}
+                    alignItems="flex-end"
                   >
-                    <VpnKey fontSize={`large`} />
+                    <Grid
+                      item
+                      className={classes.icon}
+                    >
+                      <VpnKey fontSize="large" />
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                        required
+                        id="password-username-input"
+                        label="password"
+                        className={classes.textField}
+                        name="password"
+                        onChange={handleChange}
+                        helperText="at least 6 characters"
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    <TextField
-                      required id="password-username-input"
-                      label="password"
-                      className={classes.textField}
-                      name={`password`}
-                      onChange={handleChange}
-                      helperText={`at least 6 characters`}
-                    />
-                  </Grid>
-                </Grid>
-              </div>
-              <br />
-              <Button
-                variant="contained"
-                color="default"
-                type={`submit`}
-                fullWidth={true}
-                disabled={userinfo.submitting}
-              >
+                </div>
+                <br />
+                <Button
+                  variant="contained"
+                  color="default"
+                  type="submit"
+                  fullWidth
+                  disabled={userinfo.submitting}
+                >
                 sign up
-                <Done className={classes.rightIcon} />
-              </Button>
-            </form>
+                  <Done className={classes.rightIcon} />
+                </Button>
+              </form>
+            </ColumnFlexBox>
           </ColumnFlexBox>
-        </ColumnFlexBox>
-      </FullContainer>
+        </FullContainer>
+      )
   );
 };
 

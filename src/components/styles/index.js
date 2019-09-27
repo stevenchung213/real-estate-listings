@@ -8,7 +8,7 @@ export const FullContainer = styled.div`
   width: 100vw;
   max-width: 100%;
   max-height: 100%;
-  padding: ${ props => props.padding || 0 };
+  padding: ${props => props.padding || 0};
 `;
 
 export const ColumnFlexBox = styled.div`

@@ -1,11 +1,9 @@
 import React from 'react';
 
-const PropertyDetails = () => {
-  return (
-    <div>
+const PropertyDetails = () => (
+  <div>
       DETAILS HERE
-    </div>
-  );
-};
+  </div>
+);
 
 export default PropertyDetails;

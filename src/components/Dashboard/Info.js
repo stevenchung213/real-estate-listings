@@ -1,11 +1,9 @@
 import React from 'react';
 
-const Info = () => {
-  return (
-    <div>
+const Info = () => (
+  <div>
       INFO HERE
-    </div>
-  );
-};
+  </div>
+);
 
 export default Info;

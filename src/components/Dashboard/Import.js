@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import Typography from "@material-ui/core/Typography";
+import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { FlexContainer } from "./Dashboard.styled";
-import { DropzoneContainer } from "./Import.styled";
+import { FlexContainer } from './Dashboard.styled';
+import { DropzoneContainer } from './Import.styled';
 
-const Import = props => {
-
+const Import = (props) => {
   const { handlePreview } = props;
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
 
   return (
     <FlexContainer
       id="import-container"
-      padding={'8px'}
+      padding="8px"
     >
       <DropzoneContainer
         id="dropzone-container"
@@ -35,10 +34,10 @@ const Import = props => {
         </Typography>
         <ul>
           {
-            acceptedFiles.length > 0 &&
-            acceptedFiles.map(file => (
+            acceptedFiles.length > 0
+            && acceptedFiles.map(file => (
               <li key={file.path}>
-                {file.path} - {file.size} bytes
+                {`${file.path} -${file.size} bytes`}
               </li>
             ))
           }
@@ -55,7 +54,7 @@ const Import = props => {
           fullWidth
           disabled={acceptedFiles.length === 0}
           onClick={(e) => {
-            handlePreview(acceptedFiles[0], e)
+            handlePreview(acceptedFiles[0], e);
           }}
         >
           Preview

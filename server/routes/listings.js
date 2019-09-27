@@ -1,13 +1,14 @@
 require('dotenv').config();
-const express = require('express'),
-  jwt = require('jsonwebtoken'),
-  { Users, Properties, Notes } = require('../../db'),
-  router = express.Router(),
-  key = process.env.JWT_KEY || 'testing';
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const { Users, Properties, Notes } = require('../../db');
+
+const router = express.Router();
+const key = process.env.JWT_KEY || 'testing';
 
 // token verification middleware
 const checkToken = (req, res, next) => {
-  console.log('check token middleware\n', req.headers)
+  console.log('check token middleware\n', req.headers);
   const header = req.headers.authorization;
   // if authorization header exists
   if (typeof header !== 'undefined') {
@@ -30,7 +31,7 @@ router.post('/register', (req, res) => {
   const { username, password } = req.body;
   // check if user exists in database
   Users.find({ username }).exec()
-    .then(resp => {
+    .then((resp) => {
       // if user does NOT exist
       if (resp.length === 0) {
         // create new user document
@@ -41,14 +42,14 @@ router.post('/register', (req, res) => {
       } else {
         // if user EXISTS
         res.status(400).json({
-          message: `username already exists:\n ${username}`
+          message: `username already exists:\n ${username}`,
         });
       }
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(`error: registration POST request from route ${req.originalUrl} at /register\n${err}`);
       res.status(500).json({
-        error: 'error: registration process'
+        error: 'error: registration process',
       });
     });
 });
@@ -71,14 +72,14 @@ router.post('/login', (req, res) => {
           res.status(200).json({
             userID: user._id,
             username: user.username,
-            token
+            token,
           });
         } else {
           res.status(403).json({ message: 'Invalid credentials' });
         }
-      })
+      });
     })
-    .catch(err => res.status(500).json({ message: 'Internal Server Error: /login', error: err }))
+    .catch(err => res.status(500).json({ message: 'Internal Server Error: /login', error: err }));
 });
 
 // router.get('/data', checkToken, (req, res) => {

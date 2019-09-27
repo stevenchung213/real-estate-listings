@@ -3,17 +3,17 @@ import ReactDOM from 'react-dom';
 import 'es6-promise/auto';
 import 'isomorphic-fetch';
 import { AppContainer } from 'react-hot-loader';
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from 'react-router-dom';
 import Main from './components/Main';
 
-const render = Component => {
+const render = (Component) => {
   ReactDOM.render(
     <AppContainer>
       <BrowserRouter>
         <Component />
       </BrowserRouter>
     </AppContainer>,
-    document.getElementById('root')
+    document.getElementById('root'),
   );
 };
 
