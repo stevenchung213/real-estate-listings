@@ -8,10 +8,17 @@ export const MapContainer = styled.div`
   width: 100%;
 `;
 
-export const MapPin = ({ color }) => (
-  <FontAwesomeIcon
-    icon={faMapMarkerAlt}
-    size="2x"
-    color={color}
-  />
+const PinContainer = styled.div`
+  cursor: pointer;
+  
+`;
+
+export const MapPin = ({ color, ...rest }) => (
+  <PinContainer {...rest}>
+    <FontAwesomeIcon
+      icon={faMapMarkerAlt}
+      size="2x"
+      color={color}
+    />
+  </PinContainer>
 );

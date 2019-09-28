@@ -85,6 +85,11 @@ const Dashboard = (props) => {
     data: null,
   });
 
+  const geocode = (address, city, zip) => {
+    const apiKey = process.env.GOOGLE_MAPS_APIKEY;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${address.split(' ').join('+')},+${city.split(' ').join('+')},+${zip}+&key=${apiKey}`;
+    return fetch(url).then(res => res.json());
+  };
 
   const handlePreview = (files, e) => {
     e.preventDefault();
@@ -92,7 +97,8 @@ const Dashboard = (props) => {
     console.log(files);
     const reader = new FileReader();
     const rABS = !!reader.readAsBinaryString;
-    reader.onload = (ev) => {
+    const formattedData = [];
+    reader.onload = async (ev) => {
       /* Parse data */
       const bstr = ev.target.result;
       const wb = XLSX.read(bstr, { type: rABS ? 'binary' : 'array' });
@@ -110,23 +116,36 @@ const Dashboard = (props) => {
       //   fieldsObj[field.split(' ').join('_').toLowerCase()] = true;
       //   return fieldsObj;
       // }, {});
-      const formattedData = [];
       console.log('Import.values\n', values);
+      // format sheet data
       for (let i = 0; i < values.length; i++) {
         const rowObj = {};
         for (let j = 0; j < values[i].length; j++) {
-          rowObj[fields[j].split(' ').join('_').toLowerCase()] = values[i][j];
+          rowObj[fields[j].split(' ').join('_').toLowerCase()] = values[i][j].toString();
         }
         formattedData.push(rowObj);
       }
+      // geocode address to lat & long
+      const getGeoLocation = async arr => arr.map(listing => geocode(listing.property_address, listing.city, listing.zip));
+      const test = await getGeoLocation(formattedData);
 
-      console.log('IMPORT.data\n', formattedData);
-      setDashModalData({
-        type: 'import_preview',
-        data: formattedData,
-      });
-      setDashModal(true);
+      Promise.all(test).then((json) => {
+        for (let j = 0; j < json.length; j++) {
+          const { lat, lng } = json[j].results[0].geometry.location;
+          formattedData[j].lat = lat;
+          formattedData[j].long = lng;
+        }
+      })
+        .then(() => {
+          setDashModalData({
+            type: 'import_preview',
+            data: formattedData,
+          });
+          setDashModal(true);
+        })
+        .catch(err => console.error(err));
     };
+
     if (rABS) {
       reader.readAsBinaryString(files);
     } else {
@@ -187,12 +206,12 @@ const Dashboard = (props) => {
       </DashboardContent>
       {
         dashModal && (
-        <DashboardModal
-          openModal={dashModal}
-          closeModal={() => setDashModal(false)}
-          modalType={dashModalData.type}
-          modalData={dashModalData.data}
-        />
+          <DashboardModal
+            openModal={dashModal}
+            closeModal={() => setDashModal(false)}
+            modalType={dashModalData.type}
+            modalData={dashModalData.data}
+          />
         )
       }
     </FullContainer>

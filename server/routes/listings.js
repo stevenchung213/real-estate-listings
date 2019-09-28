@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { Users, Properties, Notes } = require('../../db');
 
 const router = express.Router();
-const key = process.env.JWT_KEY || 'testing';
+const key = process.env.JWT_KEY || 'gunel';
 
 // token verification middleware
 const checkToken = (req, res, next) => {
@@ -80,6 +80,10 @@ router.post('/login', (req, res) => {
       });
     })
     .catch(err => res.status(500).json({ message: 'Internal Server Error: /login', error: err }));
+});
+
+router.get('/listings', checkToken, (req, res) => {
+
 });
 
 // router.get('/data', checkToken, (req, res) => {

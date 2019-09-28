@@ -21,6 +21,7 @@ const PropertyMap = (props) => {
           lat={33.6213578}
           lng={-112.134267}
           color="green"
+          onClick={() => console.log('clicked on MAP PIN')}
         />
       </GoogleMapReact>
     </MapContainer>

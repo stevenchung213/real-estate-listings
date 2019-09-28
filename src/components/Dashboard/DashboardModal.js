@@ -74,7 +74,7 @@ const DashboardModal = (props) => {
                 className="sheet-values"
                 label={entry[1] ? entry[1] : 'n/a'}
                 margin="normal"
-                style={{ overflowX: 'hidden' }}
+                style={{ overflowX: 'hidden', backgroundColor: i % 2 === 0 ? 'lightyellow' : 'lightblue' }}
                 defaultValue={entry[1] ? entry[1] : 'n/a'}
                 onChange={(e) => {
                   handleChange(e, i);
