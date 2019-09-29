@@ -6,7 +6,7 @@ export const StyledModal = styled(Modal)`
 `;
 
 export const PreviewContainer = styled.div`
-  height: 100%;
+  height: auto;
 `;
 
 export const PreviewGrid = styled.div`

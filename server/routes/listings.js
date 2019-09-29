@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { Users, Properties, Notes } = require('../../db');
 
 const router = express.Router();
-const key = process.env.JWT_KEY || 'gunel';
+const key = process.env.JWT_KEY;
 
 // token verification middleware
 const checkToken = (req, res, next) => {
@@ -22,12 +22,12 @@ const checkToken = (req, res, next) => {
 };
 
 router.use((req, res, next) => {
-  console.log(`incoming ${req.method} request to /api/seiPrep`);
+  console.log(`incoming ${req.method} request from ${req.originalUrl} at ${req.url}`);
   next();
 });
 
 router.post('/register', (req, res) => {
-  console.log(`post request from ${req.originalUrl}\n at /register`, req.body);
+  console.log(`post request from ${req.originalUrl}\n at ${req.url}`, req.body);
   const { username, password } = req.body;
   // check if user exists in database
   Users.find({ username }).exec()
@@ -47,7 +47,7 @@ router.post('/register', (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(`error: registration POST request from route ${req.originalUrl} at /register\n${err}`);
+      console.log(`error: registration POST request from route ${req.originalUrl} at ${req.url}\n${err}`);
       res.status(500).json({
         error: 'error: registration process',
       });
@@ -55,14 +55,14 @@ router.post('/register', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-  console.log(`post request from ${req.originalUrl} at /login\n`, req.body);
+  console.log(`post request from ${req.originalUrl} at ${req.url}\n`, req.body);
   const { username, password } = req.body;
   Users.findOne({ username }).exec()
     .then((user) => {
       user.comparePassword(password, (err, isMatch) => {
         if (err) {
           console.log(`error: comparing user password\n${err}`);
-          res.status(500).json({ message: 'Internal error at /login' });
+          res.status(403).json({ message: 'Invalid credentials' });
         }
         // isMatch ? sign jwt and send : login failed
         if (isMatch) {
@@ -82,8 +82,27 @@ router.post('/login', (req, res) => {
     .catch(err => res.status(500).json({ message: 'Internal Server Error: /login', error: err }));
 });
 
-router.get('/listings', checkToken, (req, res) => {
+router.post('/listings', checkToken, (req, res) => {
+  console.log(`post request from ${req.originalUrl}\n at ${req.url}`, req.body);
+  jwt.verify(req.token, key, (err, authed) => {
+    if (err) {
+      console.log(`error: could not verify token at protected route at ${req.url}`);
+      res.status(401).json({ message: `The access token provided is expired, revoked, malformed, or invalid for other reasons`, error: err });
+    } else {
 
+    }
+  })
+});
+
+router.get('/listings', checkToken, (req, res) => {
+  jwt.verify(req.token, key, (err, authed) => {
+    if (err) {
+      console.log(`error: could not verify token at protected route at ${req.url}`);
+      res.status(401).json({ message: `The access token provided is expired, revoked, malformed, or invalid for other reasons`, error: err });
+    } else {
+      console.log(req.body)
+    }
+  });
 });
 
 // router.get('/data', checkToken, (req, res) => {

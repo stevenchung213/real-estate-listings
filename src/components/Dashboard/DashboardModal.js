@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
     margin: 'auto',
     width: '100%',
     maxWidth: '80vw',
-    height: '100%',
+    height: 'auto',
     maxHeight: '80vh',
     overflow: 'hidden',
     backgroundColor: theme.palette.background.paper,
@@ -24,6 +24,8 @@ const DashboardModal = (props) => {
   const {
     modalType, modalData, openModal, closeModal,
   } = props;
+
+  const api = process.env.API || 'http://localhost:3000/api/v1';
   const classes = useStyles();
   const [importInputs, setImportInputs] = useState(modalData);
 
@@ -41,10 +43,14 @@ const DashboardModal = (props) => {
     console.log(e.target.value);
   };
 
-  const handleSubmit = () => {
-    // e.preventDefault();
+  const handleSubmit = (data) => {
     console.log(importInputs);
     // POST to api and save property into database
+    const url = `${api}/listings`
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
   };
 
   let content;
