@@ -107,7 +107,7 @@ const Dashboard = (props) => {
       const ws = wb.Sheets[wsname];
       /* Convert array of arrays */
       // const jsonSheet = XLSX.utils.sheet_to_json(ws, { header: 1 });
-      const jsonSheet = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+      const jsonSheet = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: false });
       /* Update state */
       const filtered = jsonSheet.filter(row => row[0]);
       const fields = filtered[0];
@@ -132,8 +132,8 @@ const Dashboard = (props) => {
       Promise.all(test).then((json) => {
         for (let j = 0; j < json.length; j++) {
           const { lat, lng } = json[j].results[0].geometry.location;
-          formattedData[j].lat = lat;
-          formattedData[j].long = lng;
+          formattedData[j].lat = lat.toString();
+          formattedData[j].long = lng.toString();
         }
       })
         .then(() => {

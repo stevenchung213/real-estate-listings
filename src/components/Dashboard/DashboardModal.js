@@ -29,7 +29,7 @@ const DashboardModal = (props) => {
 
   useEffect(() => {
     setImportInputs(modalData);
-  }, []);
+  }, [modalData]);
 
   const handleChange = (e, i) => {
     e.persist();
@@ -50,7 +50,7 @@ const DashboardModal = (props) => {
   let content;
   if (modalType === 'import_preview') {
     content = (
-      <PreviewContainer id={`import-preview-container`}>
+      <PreviewContainer id="import-preview-container">
         <PreviewGrid
           gridTemplateColumns={`repeat(${Object.keys(modalData[0]).length}, minmax(200px, 1fr))`}
         >
@@ -67,23 +67,43 @@ const DashboardModal = (props) => {
           }
           {
             modalData.map((obj, i) => Object.entries(obj).map((entry => (
-              <TextField
-                key={`value-${entry[0]}`}
-                name={entry[0]}
-                variant="filled"
-                className="sheet-values"
-                label={entry[1] ? entry[1] : 'n/a'}
-                margin="normal"
-                style={{ overflowX: 'hidden', backgroundColor: i % 2 === 0 ? 'lightyellow' : 'lightblue' }}
-                defaultValue={entry[1] ? entry[1] : 'n/a'}
-                onChange={(e) => {
-                  handleChange(e, i);
-                }}
-              >
-                {
-                  entry[1] ? entry[1] : 'n/a'
-                }
-              </TextField>
+              entry[0] === 'property_address' || entry[0] === 'city' || entry[0] === 'zip' || entry[0] === 'lat' || entry[0] === 'long'
+                ? (
+                  <TextField
+                    key={`value-${entry[0]}`}
+                    name={entry[0]}
+                    variant="filled"
+                    className="sheet-values"
+                    label={entry[1] ? entry[1] : 'n/a'}
+                    margin="normal"
+                    style={{ overflowX: 'hidden', backgroundColor: 'lightgrey' }}
+                    defaultValue={entry[1] ? entry[1] : 'n/a'}
+                    disabled
+                  >
+                    {
+                    entry[1] ? entry[1] : 'n/a'
+                  }
+                  </TextField>
+                )
+                : (
+                  <TextField
+                    key={`value-${entry[0]}`}
+                    name={entry[0]}
+                    variant="filled"
+                    className="sheet-values"
+                    label={entry[1] ? entry[1] : 'n/a'}
+                    margin="normal"
+                    style={{ overflowX: 'hidden', backgroundColor: i % 2 === 0 ? 'lightyellow' : 'lightblue' }}
+                    defaultValue={entry[1] ? entry[1] : 'n/a'}
+                    onChange={(e) => {
+                      handleChange(e, i);
+                    }}
+                  >
+                    {
+                      entry[1] ? entry[1] : 'n/a'
+                    }
+                  </TextField>
+                )
             ))))
           }
         </PreviewGrid>
@@ -99,7 +119,7 @@ const DashboardModal = (props) => {
       </PreviewContainer>
     );
   }
-
+  console.log(modalData);
   return (
     <StyledModal
       id="dashboard-modal-backdrop-container"
