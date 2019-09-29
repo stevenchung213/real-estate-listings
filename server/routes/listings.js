@@ -82,16 +82,18 @@ router.post('/login', (req, res) => {
     .catch(err => res.status(500).json({ message: 'Internal Server Error: /login', error: err }));
 });
 
-router.post('/listings', checkToken, (req, res) => {
-  console.log(`post request from ${req.originalUrl}\n at ${req.url}`, req.body);
-  jwt.verify(req.token, key, (err, authed) => {
-    if (err) {
-      console.log(`error: could not verify token at protected route at ${req.url}`);
-      res.status(401).json({ message: `The access token provided is expired, revoked, malformed, or invalid for other reasons`, error: err });
-    } else {
+router.post('/listings', (req, res) => {
+  // console.log(`post request from ${req.originalUrl}\n at ${req.url}`, req.body);
+  // jwt.verify(req.token, key, (err, authed) => {
+  //   if (err) {
+  //     console.log(`error: could not verify token at protected route at ${req.url}`);
+  //     res.status(401).json({ message: `The access token provided is expired, revoked, malformed, or invalid for other reasons`, error: err });
+  //   } else {
+  //
+  //   }
+  // })
+  console.log(`post request from ${req.originalUrl} at ${req.url}\n`, req.body);
 
-    }
-  })
 });
 
 router.get('/listings', checkToken, (req, res) => {
