@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
 
 const DashboardModal = (props) => {
   const {
-    modalType, modalData, openModal, closeModal,
+    modalType, modalData, openModal, closeModal, handleImport
   } = props;
 
   const api = process.env.API || 'http://localhost:3000/api/v1';
@@ -43,15 +43,15 @@ const DashboardModal = (props) => {
     console.log(e.target.value);
   };
 
-  const handleSubmit = (data) => {
-    console.log(importInputs);
-    // POST to api and save property into database
-    const url = `${api}/listings`
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
-  };
+  // const handleSubmit = (data) => {
+  //   console.log(importInputs);
+  //   // POST to api and save property into database
+  //   const url = `${api}/listings`
+  //   fetch(url, {
+  //     method: 'POST',
+  //     body: JSON.stringify(data),
+  //   })
+  // };
 
   let content;
   if (modalType === 'import_preview') {
@@ -118,7 +118,7 @@ const DashboardModal = (props) => {
           color="default"
           type="submit"
           fullWidth
-          onClick={handleSubmit}
+          onClick={() => handleImport(importInputs)}
         >
           submit
         </Button>

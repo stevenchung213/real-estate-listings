@@ -153,6 +153,16 @@ const Dashboard = (props) => {
     }
   };
 
+  const handleImport = (data) => {
+    // POST to api and save property into database
+    const url = `${api}/listings`;
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+      .then(res => console.log(res))
+  };
+
   const handlePinClick = () => {
     // update state as well after modifying a property
   };
@@ -211,6 +221,7 @@ const Dashboard = (props) => {
             closeModal={() => setDashModal(false)}
             modalType={dashModalData.type}
             modalData={dashModalData.data}
+            handleImport={handleImport}
           />
         )
       }
