@@ -75,7 +75,7 @@ const Dashboard = (props) => {
   const {
     user, setErrors, setErrorModal, history,
   } = props;
-  const { username } = user;
+  const { username, token } = user;
   console.log(props);
 
   const [view, setView] = useState('map');
@@ -87,7 +87,17 @@ const Dashboard = (props) => {
 
   const geocode = (address, city, zip) => {
     const apiKey = process.env.GOOGLE_MAPS_APIKEY;
+    // Notice Date
+      // ['Notice', 'Date']
+      // 'Notice+Date'
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${address.split(' ').join('+')},+${city.split(' ').join('+')},+${zip}+&key=${apiKey}`;
+    // REMOVE THE COMMA!
+    // REMOVE THE COMMA!
+    // REMOVE THE COMMA!
+    // REMOVE THE COMMA!
+    // REMOVE THE COMMA!
+    console.log(url)
+
     return fetch(url).then(res => res.json());
   };
 
@@ -99,29 +109,33 @@ const Dashboard = (props) => {
     const rABS = !!reader.readAsBinaryString;
     const formattedData = [];
     reader.onload = async (ev) => {
-      /* Parse data */
+      // parse data
       const bstr = ev.target.result;
       const wb = XLSX.read(bstr, { type: rABS ? 'binary' : 'array' });
-      /* Get first worksheet */
+      // get first worksheet
       const wsname = wb.SheetNames[0];
       const ws = wb.Sheets[wsname];
-      /* Convert array of arrays */
-      // const jsonSheet = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      // convert array of arrays
       const jsonSheet = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: false });
-      /* Update state */
+      // update state
       const filtered = jsonSheet.filter(row => row[0]);
       const fields = filtered[0];
       const values = filtered.slice(1);
-      // const fields = filtered[0].reduce((fieldsObj, field, i) => {
-      //   fieldsObj[field.split(' ').join('_').toLowerCase()] = true;
-      //   return fieldsObj;
-      // }, {});
       console.log('Import.values\n', values);
       // format sheet data
       for (let i = 0; i < values.length; i++) {
         const rowObj = {};
         for (let j = 0; j < values[i].length; j++) {
-          rowObj[fields[j].split(' ').join('_').toLowerCase()] = values[i][j].toString();
+          // remove $ sign from values before sending to database
+          if (values[i][j].length === 0) {
+            rowObj[fields[j].split(' ').join('_').toLowerCase()] = Number(values[i][j].slice(1));
+          }
+          if (values[i][j][0] === '$') {
+            rowObj[fields[j].split(' ').join('_').toLowerCase()] = Number(values[i][j].slice(1));
+          }
+          else {
+            rowObj[fields[j].split(' ').join('_').toLowerCase()] = values[i][j].toString();
+          }
         }
         formattedData.push(rowObj);
       }
@@ -159,9 +173,12 @@ const Dashboard = (props) => {
     fetch(url, {
       method: 'POST',
       body: JSON.stringify(data),
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
     })
-      .then(res => console.log(res))
+      .then(res => console.log(res.json()));
   };
 
   const handlePinClick = () => {

@@ -9,16 +9,33 @@ const key = process.env.JWT_KEY;
 // token verification middleware
 const checkToken = (req, res, next) => {
   console.log('check token middleware\n', req.headers);
-  const header = req.headers.authorization;
-  // if authorization header exists
-  if (typeof header !== 'undefined') {
-    // header = ['Bearer', '${token}']
-    // req.token = '${token}'
-    req.token = header.split(' ')[1];
-    next();
+  // const token =req.body.token ||req.query.token ||req.headers['x-access-token'] ||req.cookies.token;
+  const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
+  console.log(token)
+  if (!token) {
+    console.log('aaaaaaaaaaaaaaaaaaaaaaa')
+    res.status(401).json({ message: 'Unauthorized: Invalid token' });
   } else {
-    res.status(403).json({ message: 'Invalid token' });
+    jwt.verify(token, key, (err, success) => {
+      console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbb')
+      if (err) {
+        console.log('cccccccccccccccccccccc\n', err)
+        res.status(401).json({ message: 'Unauthorized: Invalid token' });
+      } else {
+        next();
+      }
+    });
   }
+  // const header = req.headers.authorization;
+  // // if authorization header exists
+  // if (typeof header !== 'undefined') {
+  //   // header = ['Bearer', '${token}']
+  //   // req.token = '${token}'
+  //   req.token = header.split(' ')[1];
+  //   next();
+  // } else {
+  //   res.status(403).json({ message: 'Invalid token' });
+  // }
 };
 
 router.use((req, res, next) => {
@@ -61,28 +78,28 @@ router.post('/login', (req, res) => {
     .then((user) => {
       user.comparePassword(password, (err, isMatch) => {
         if (err) {
-          console.log(`error: comparing user password\n${err}`);
-          res.status(403).json({ message: 'Invalid credentials' });
+          console.log(`error at login: comparing user password\n${err}`);
+          res.status(500).json({ message: 'Internal server error' });
         }
         // isMatch ? sign jwt and send : login failed
         if (isMatch) {
-          // console.log('user document\n', user)
+          console.log('user document\n', user)
           // sign token and send
-          const token = jwt.sign({ userID: user._id }, key, { expiresIn: 60 });
+          const token = jwt.sign({ userID: user._id }, key, { expiresIn: 1800000 });
           res.status(200).json({
             userID: user._id,
             username: user.username,
             token,
           });
         } else {
-          res.status(403).json({ message: 'Invalid credentials' });
+          res.status(401).json({ message: 'Invalid credentials' });
         }
       });
     })
     .catch(err => res.status(500).json({ message: 'Internal Server Error: /login', error: err }));
 });
 
-router.post('/listings', (req, res) => {
+router.post('/listings', checkToken, (req, res) => {
   // console.log(`post request from ${req.originalUrl}\n at ${req.url}`, req.body);
   // jwt.verify(req.token, key, (err, authed) => {
   //   if (err) {
@@ -92,17 +109,19 @@ router.post('/listings', (req, res) => {
   //
   //   }
   // })
-  console.log(`post request from ${req.originalUrl} at ${req.url}\n`, req.body);
-
+  console.log(`post request at ${req.originalUrl}\n`, req.body);
 });
 
 router.get('/listings', checkToken, (req, res) => {
   jwt.verify(req.token, key, (err, authed) => {
     if (err) {
       console.log(`error: could not verify token at protected route at ${req.url}`);
-      res.status(401).json({ message: `The access token provided is expired, revoked, malformed, or invalid for other reasons`, error: err });
+      res.status(401).json({
+        message: 'The access token provided is expired, revoked, malformed, or invalid for other reasons',
+        error: err,
+      });
     } else {
-      console.log(req.body)
+      console.log(req.body);
     }
   });
 });

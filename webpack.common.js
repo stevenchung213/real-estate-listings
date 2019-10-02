@@ -66,7 +66,7 @@ module.exports = {
       cache: false,
       minify: true,
       // your app title below
-      title: 'homeSlanger5000',
+      title: '',
       meta: [
         {
           charset: 'UTF-8',
@@ -74,12 +74,12 @@ module.exports = {
         {
           name: 'author',
           // your name below
-          content: 'foolstackDevs-steve',
+          content: '',
         },
         {
           name: 'description',
           // your app description below
-          content: 'buy my house damn you!',
+          content: '',
         },
       ],
       links: [

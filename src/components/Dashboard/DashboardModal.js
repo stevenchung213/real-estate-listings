@@ -9,9 +9,9 @@ const useStyles = makeStyles(theme => ({
   paper: {
     margin: 'auto',
     width: '100%',
-    maxWidth: '80vw',
+    maxWidth: '90vw',
     height: 'auto',
-    maxHeight: '80vh',
+    maxHeight: '90vh',
     overflow: 'hidden',
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
 
 const DashboardModal = (props) => {
   const {
-    modalType, modalData, openModal, closeModal, handleImport
+    modalType, modalData, openModal, closeModal, handleImport,
   } = props;
 
   const api = process.env.API || 'http://localhost:3000/api/v1';
@@ -37,7 +37,7 @@ const DashboardModal = (props) => {
     e.persist();
     const copy = [...importInputs];
     const objToUpdate = { ...importInputs[i] };
-    objToUpdate[e.target.name] = e.target.value;
+    objToUpdate[e.target.name] = isNaN(e.target.value) ? e.target.value : Number(e.target.value);
     copy[i] = objToUpdate;
     setImportInputs(copy);
     console.log(e.target.value);
@@ -115,7 +115,7 @@ const DashboardModal = (props) => {
         </PreviewGrid>
         <Button
           variant="contained"
-          color="default"
+          color="primary"
           type="submit"
           fullWidth
           onClick={() => handleImport(importInputs)}
