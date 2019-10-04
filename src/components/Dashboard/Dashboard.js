@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -84,6 +84,7 @@ const Dashboard = (props) => {
     type: '',
     data: null,
   });
+  const [listings, setListings] = useState(null);
 
   const geocode = (address, city, zip) => {
     const apiKey = process.env.GOOGLE_MAPS_APIKEY;
@@ -135,8 +136,8 @@ const Dashboard = (props) => {
         formattedData.push(rowObj);
       }
       // geocode address to lat & long
-      const getGeoLocation = async arr => arr.map(listing => geocode(listing.property_address, listing.city, listing.zip));
-      const test = await getGeoLocation(formattedData);
+      const getGeoLocations = async arr => arr.map(listing => geocode(listing.property_address, listing.city, listing.zip));
+      const test = await getGeoLocations(formattedData);
 
       Promise.all(test).then((json) => {
         for (let j = 0; j < json.length; j++) {
@@ -170,26 +171,28 @@ const Dashboard = (props) => {
       body: JSON.stringify(data),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        'Authorization': `Bearer ${token}`,
       },
     })
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json();
-        }
-        throw new Error('Duplicate property conflict');
-      })
-      .then(() => {
+      .then(res => res.json())
+      .then((json) => {
         // successful import modal
-        setErrors({
-          type: 'Success',
-          message: 'Properties have been imported successfully!',
-        });
-        setErrorModal(true);
+        console.log(json)
+        if (json.error) {
+          throw Error(json.error.errmsg);
+        } else {
+          setErrors({
+            type: 'Success',
+            message: 'Properties have been imported successfully!',
+          });
+          setErrorModal(true);
+          setDashModal(false);
+        }
       })
       .catch((err) => {
+        console.log(err.message)
         setErrors({
-          type: 'Error',
+          type: 'Duplicate property imported',
           message: err.message,
         });
         setErrorModal(true);
@@ -201,6 +204,23 @@ const Dashboard = (props) => {
   };
 
   // USEEFFECT to call API for properties data on mount
+  useEffect(() => {
+    const url = `${api}/listings`;
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        // set state for property listings data
+        setListings(json.success);
+        console.log(json)
+      })
+      .catch(err => console.log(err));
+  }, []);
 
   return (
     <FullContainer
@@ -242,7 +262,7 @@ const Dashboard = (props) => {
         id="dashboard-content-container"
         className={classes.content}
       >
-        {view === 'map' && <PropertyMap />}
+        {view === 'map' && listings && <PropertyMap listings={listings} />}
         {view === 'properties' && <PropertyDetails />}
         {view === 'info' && <Info />}
         {view === 'import' && <Import handlePreview={handlePreview} />}
