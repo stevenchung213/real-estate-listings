@@ -11,15 +11,15 @@ const checkToken = (req, res, next) => {
   console.log('check token middleware\n', req.headers);
   // const token =req.body.token ||req.query.token ||req.headers['x-access-token'] ||req.cookies.token;
   const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
-  console.log(token)
+  console.log(token);
   if (!token) {
-    console.log('aaaaaaaaaaaaaaaaaaaaaaa')
+    console.log('aaaaaaaaaaaaaaaaaaaaaaa');
     res.status(401).json({ message: 'Unauthorized: Invalid token' });
   } else {
     jwt.verify(token, key, (err, success) => {
-      console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbb')
+      console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbb');
       if (err) {
-        console.log('cccccccccccccccccccccc\n', err)
+        console.log('cccccccccccccccccccccc\n', err);
         res.status(401).json({ message: 'Unauthorized: Invalid token' });
       } else {
         next();
@@ -39,7 +39,7 @@ const checkToken = (req, res, next) => {
 };
 
 router.use((req, res, next) => {
-  console.log(`incoming ${req.method} request from ${req.originalUrl} at ${req.url}`);
+  console.log(`incoming ${req.method} request at ${req.originalUrl}`);
   next();
 });
 
@@ -58,7 +58,7 @@ router.post('/register', (req, res) => {
           .catch(err => console.log(`error: saving new user\n${err}`));
       } else {
         // if user EXISTS
-        res.status(400).json({
+        res.status(403).json({
           message: `username already exists:\n ${username}`,
         });
       }
@@ -66,7 +66,8 @@ router.post('/register', (req, res) => {
     .catch((err) => {
       console.log(`error: registration POST request from route ${req.originalUrl} at ${req.url}\n${err}`);
       res.status(500).json({
-        error: 'error: registration process',
+        message: `Error occurred during the registration process at ${req.originalUrl}`,
+        error: err,
       });
     });
 });
@@ -83,7 +84,7 @@ router.post('/login', (req, res) => {
         }
         // isMatch ? sign jwt and send : login failed
         if (isMatch) {
-          console.log('user document\n', user)
+          console.log('user document\n', user);
           // sign token and send
           const token = jwt.sign({ userID: user._id }, key, { expiresIn: 1800000 });
           res.status(200).json({
@@ -92,38 +93,40 @@ router.post('/login', (req, res) => {
             token,
           });
         } else {
-          res.status(401).json({ message: 'Invalid credentials' });
+          res.status(401).json({ message: 'Invalid credentials', error: err });
         }
       });
     })
-    .catch(err => res.status(500).json({ message: 'Internal Server Error: /login', error: err }));
+    .catch((err) => {
+      console.log(`error caught: ${req.method} request at ${req.originalUrl}\n${err}`);
+      res.status(500).json({
+        message: `Internal server error at ${req.originalUrl}`,
+        error: err,
+      });
+    });
 });
 
 router.post('/listings', checkToken, (req, res) => {
-  // console.log(`post request from ${req.originalUrl}\n at ${req.url}`, req.body);
-  // jwt.verify(req.token, key, (err, authed) => {
-  //   if (err) {
-  //     console.log(`error: could not verify token at protected route at ${req.url}`);
-  //     res.status(401).json({ message: `The access token provided is expired, revoked, malformed, or invalid for other reasons`, error: err });
-  //   } else {
-  //
-  //   }
-  // })
   console.log(`post request at ${req.originalUrl}\n`, req.body);
-});
-
-router.get('/listings', checkToken, (req, res) => {
-  jwt.verify(req.token, key, (err, authed) => {
+  // save Properties document to db
+  const documentsArr = req.body;
+  Properties.insertMany(documentsArr, (err, docs) => {
     if (err) {
-      console.log(`error: could not verify token at protected route at ${req.url}`);
-      res.status(401).json({
-        message: 'The access token provided is expired, revoked, malformed, or invalid for other reasons',
+      console.log(`error: while inserting at ${req.originalUrl}\n`, err);
+      res.status(409).json({
+        message: `Duplicate property conflict error at ${req.originalUrl}`,
         error: err,
       });
     } else {
-      console.log(req.body);
+      res.status(200).json({
+        success: docs,
+      });
     }
   });
+});
+
+router.get('/listings', checkToken, (req, res) => {
+  console.log(`get request at ${req.originalUrl}\n`, req.body);
 });
 
 // router.get('/data', checkToken, (req, res) => {

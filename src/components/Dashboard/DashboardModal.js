@@ -80,14 +80,14 @@ const DashboardModal = (props) => {
                     name={entry[0]}
                     variant="filled"
                     className="sheet-values"
-                    label={entry[1] ? entry[1] : 'n/a'}
+                    label={entry[1] ? entry[1] : 'null'}
                     margin="normal"
                     style={{ overflowX: 'hidden', backgroundColor: 'lightgrey' }}
-                    defaultValue={entry[1] ? entry[1] : 'n/a'}
+                    defaultValue={entry[1] && !isNaN(Number(entry[1])) ? Number(entry[1]) : entry[1] ? entry[1] : 'null'}
                     disabled
                   >
                     {
-                    entry[1] ? entry[1] : 'n/a'
+                    entry[1] ? entry[1] : 'null'
                   }
                   </TextField>
                 )
@@ -97,16 +97,16 @@ const DashboardModal = (props) => {
                     name={entry[0]}
                     variant="filled"
                     className="sheet-values"
-                    label={entry[1] ? entry[1] : 'n/a'}
+                    label={entry[1] ? entry[1] : 'null'}
                     margin="normal"
                     style={{ overflowX: 'hidden', backgroundColor: i % 2 === 0 ? 'lightyellow' : 'lightblue' }}
-                    defaultValue={entry[1] ? entry[1] : 'n/a'}
+                    defaultValue={entry[1] ? entry[1] : 'null'}
                     onChange={(e) => {
                       handleChange(e, i);
                     }}
                   >
                     {
-                      entry[1] ? entry[1] : 'n/a'
+                      entry[1] ? entry[1] : 'null'
                     }
                   </TextField>
                 )

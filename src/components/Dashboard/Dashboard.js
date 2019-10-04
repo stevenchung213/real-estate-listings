@@ -87,16 +87,8 @@ const Dashboard = (props) => {
 
   const geocode = (address, city, zip) => {
     const apiKey = process.env.GOOGLE_MAPS_APIKEY;
-    // Notice Date
-      // ['Notice', 'Date']
-      // 'Notice+Date'
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${address.split(' ').join('+')},+${city.split(' ').join('+')},+${zip}+&key=${apiKey}`;
-    // REMOVE THE COMMA!
-    // REMOVE THE COMMA!
-    // REMOVE THE COMMA!
-    // REMOVE THE COMMA!
-    // REMOVE THE COMMA!
-    console.log(url)
+    console.log(url);
 
     return fetch(url).then(res => res.json());
   };
@@ -121,20 +113,23 @@ const Dashboard = (props) => {
       const filtered = jsonSheet.filter(row => row[0]);
       const fields = filtered[0];
       const values = filtered.slice(1);
-      console.log('Import.values\n', values);
+      console.log('Import.values\n', values, '\n', fields);
       // format sheet data
       for (let i = 0; i < values.length; i++) {
         const rowObj = {};
         for (let j = 0; j < values[i].length; j++) {
+          const field = fields[j].split(' ').join('_').toLowerCase();
+          const value = values[i][j];
+          console.log('FIELD: ', field);
           // remove $ sign from values before sending to database
-          if (values[i][j].length === 0) {
-            rowObj[fields[j].split(' ').join('_').toLowerCase()] = Number(values[i][j].slice(1));
-          }
-          if (values[i][j][0] === '$') {
-            rowObj[fields[j].split(' ').join('_').toLowerCase()] = Number(values[i][j].slice(1));
-          }
-          else {
-            rowObj[fields[j].split(' ').join('_').toLowerCase()] = values[i][j].toString();
+          if (value.length === 0) {
+            rowObj[field] = '';
+          } else if (field === 'estimated_value') {
+            rowObj[field] = Number(value.slice(1).split(',').join(''));
+          } else if (!isNaN(Number(value))) {
+            rowObj[field] = Number(value);
+          } else {
+            rowObj[field] = value.toString();
           }
         }
         formattedData.push(rowObj);
@@ -146,8 +141,8 @@ const Dashboard = (props) => {
       Promise.all(test).then((json) => {
         for (let j = 0; j < json.length; j++) {
           const { lat, lng } = json[j].results[0].geometry.location;
-          formattedData[j].lat = lat.toString();
-          formattedData[j].long = lng.toString();
+          formattedData[j].lat = lat;
+          formattedData[j].long = lng;
         }
       })
         .then(() => {
@@ -175,10 +170,30 @@ const Dashboard = (props) => {
       body: JSON.stringify(data),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     })
-      .then(res => console.log(res.json()));
+      .then((res) => {
+        if (res.status === 200) {
+          return res.json();
+        }
+        throw new Error('Duplicate property conflict');
+      })
+      .then(() => {
+        // successful import modal
+        setErrors({
+          type: 'Success',
+          message: 'Properties have been imported successfully!',
+        });
+        setErrorModal(true);
+      })
+      .catch((err) => {
+        setErrors({
+          type: 'Error',
+          message: err.message,
+        });
+        setErrorModal(true);
+      });
   };
 
   const handlePinClick = () => {
