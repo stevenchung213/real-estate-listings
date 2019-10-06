@@ -61,14 +61,14 @@ const Dashboard = (props) => {
       icon: <House />,
     },
     {
-      name: 'Info',
-      view: 'info',
-      icon: <Person />,
-    },
-    {
       name: 'Import',
       view: 'import',
       icon: <Add />,
+    },
+    {
+      name: 'Admin',
+      view: 'admin',
+      icon: <Person />,
     },
   ];
 
@@ -171,13 +171,13 @@ const Dashboard = (props) => {
       body: JSON.stringify(data),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then(res => res.json())
       .then((json) => {
         // successful import modal
-        console.log(json)
+        console.log(json);
         if (json.error) {
           throw Error(json.error.errmsg);
         } else {
@@ -190,10 +190,11 @@ const Dashboard = (props) => {
         }
       })
       .catch((err) => {
-        console.log(err.message)
+        console.log(err.message);
         setErrors({
-          type: 'Duplicate property imported',
-          message: err.message,
+          type: err.message,
+          message: 'A property with the listed notice_number is already in our database.  Please remove that row from the Excel'
+            + ' spreadsheet then try again.',
         });
         setErrorModal(true);
       });
@@ -210,17 +211,17 @@ const Dashboard = (props) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then(res => res.json())
-      .then(json => {
+      .then((json) => {
         // set state for property listings data
         setListings(json.success);
-        console.log(json)
+        console.log(json);
       })
       .catch(err => console.log(err));
-  }, []);
+  }, [api, token]);
 
   return (
     <FullContainer
@@ -264,8 +265,8 @@ const Dashboard = (props) => {
       >
         {view === 'map' && listings && <PropertyMap listings={listings} />}
         {view === 'properties' && <PropertyDetails />}
-        {view === 'info' && <Info />}
         {view === 'import' && <Import handlePreview={handlePreview} />}
+        {view === 'admin' && <Info />}
       </DashboardContent>
       {
         dashModal && (
