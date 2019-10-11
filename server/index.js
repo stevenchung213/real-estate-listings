@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 
 app.listen(port, (err) => {
   if (err) {
-    console.log(err);
+    console.error(err);
   }
   console.log(`express listening at http://localhost:${port}/`);
 });

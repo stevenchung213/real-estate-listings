@@ -9,33 +9,22 @@ const key = process.env.JWT_KEY;
 // token verification middleware
 const checkToken = (req, res, next) => {
   console.log('check token middleware\n', req.headers);
-  // const token =req.body.token ||req.query.token ||req.headers['x-access-token'] ||req.cookies.token;
   const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
   console.log(token);
   if (!token) {
     console.log('aaaaaaaaaaaaaaaaaaaaaaa');
     res.status(401).json({ message: 'Unauthorized: Invalid token' });
   } else {
-    jwt.verify(token, key, (err, success) => {
+    jwt.verify(token, key, (err) => {
       console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbb');
       if (err) {
-        console.log('cccccccccccccccccccccc\n', err);
+        console.error('cccccccccccccccccccccc\n', err);
         res.status(401).json({ message: 'Unauthorized: Invalid token' });
       } else {
         next();
       }
     });
   }
-  // const header = req.headers.authorization;
-  // // if authorization header exists
-  // if (typeof header !== 'undefined') {
-  //   // header = ['Bearer', '${token}']
-  //   // req.token = '${token}'
-  //   req.token = header.split(' ')[1];
-  //   next();
-  // } else {
-  //   res.status(403).json({ message: 'Invalid token' });
-  // }
 };
 
 router.use((req, res, next) => {
@@ -55,7 +44,7 @@ router.post('/register', (req, res) => {
         const newUser = new Users({ username, password });
         newUser.save()
           .then(() => res.status(200).json({ success: 'registration', username }))
-          .catch(err => console.log(`error: saving new user\n${err}`));
+          .catch(err => console.error(`error: saving new user\n${err}`));
       } else {
         // if user EXISTS
         res.status(403).json({
@@ -64,7 +53,7 @@ router.post('/register', (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(`error: registration POST request from route ${req.originalUrl} at ${req.url}\n${err}`);
+      console.error(`error: registration POST request from route ${req.originalUrl} at ${req.url}\n${err}`);
       res.status(500).json({
         message: `Error occurred during the registration process at ${req.originalUrl}`,
         error: err,
@@ -79,7 +68,7 @@ router.post('/login', (req, res) => {
     .then((user) => {
       user.comparePassword(password, (err, isMatch) => {
         if (err) {
-          console.log(`error at login: comparing user password\n${err}`);
+          console.error(`error at login: comparing user password\n${err}`);
           res.status(500).json({ message: 'Internal server error' });
         }
         // isMatch ? sign jwt and send : login failed
@@ -98,7 +87,7 @@ router.post('/login', (req, res) => {
       });
     })
     .catch((err) => {
-      console.log(`error caught: ${req.method} request at ${req.originalUrl}\n${err}`);
+      console.error(`error caught: ${req.method} request at ${req.originalUrl}\n${err}`);
       res.status(500).json({
         message: `Internal server error at ${req.originalUrl}`,
         error: err,
@@ -112,7 +101,7 @@ router.post('/listings', checkToken, (req, res) => {
   const documentsArr = req.body;
   Properties.insertMany(documentsArr, (err, docs) => {
     if (err) {
-      console.log(`error: while inserting at ${req.originalUrl}\n`, err);
+      console.error(`error: while inserting document at ${req.originalUrl}\n`, err);
       res.status(409).json({
         message: `Duplicate property conflict error at ${req.originalUrl}`,
         error: err,
@@ -134,6 +123,7 @@ router.get('/listings', checkToken, (req, res) => {
       });
     })
     .catch((err) => {
+      console.error(`error: while finding documents at ${req.originalUrl}\n`, err);
       res.status(500).json({
         message: `Error fetching documents from database at ${req.originalUrl}`,
         error: err,

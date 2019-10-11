@@ -14,7 +14,7 @@ import {
 } from '@material-ui/icons';
 import XLSX from 'xlsx';
 import PropertyMap from './Map';
-import PropertyDetails from './Details';
+import PropertyDetails from './PropertyDetails';
 import Import from './Import';
 import Info from './Info';
 import { FullContainer } from '../styles';
@@ -76,7 +76,6 @@ const Dashboard = (props) => {
     user, setErrors, setErrorModal, history,
   } = props;
   const { username, token } = user;
-  console.log(props);
 
   const [view, setView] = useState('map');
   const [dashModal, setDashModal] = useState(false);
@@ -86,7 +85,7 @@ const Dashboard = (props) => {
   });
   const [listings, setListings] = useState(null);
 
-  const geocode = (address, city, zip) => {
+  const geocode = (address, city, zip = '') => {
     const apiKey = process.env.GOOGLE_MAPS_APIKEY;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${address.split(' ').join('+')},+${city.split(' ').join('+')},+${zip}+&key=${apiKey}`;
     console.log(url);
@@ -121,7 +120,6 @@ const Dashboard = (props) => {
         for (let j = 0; j < values[i].length; j++) {
           const field = fields[j].split(' ').join('_').toLowerCase();
           const value = values[i][j];
-          console.log('FIELD: ', field);
           // remove $ sign from values before sending to database
           if (value.length === 0) {
             rowObj[field] = '';
@@ -153,7 +151,14 @@ const Dashboard = (props) => {
           });
           setDashModal(true);
         })
-        .catch(err => console.error(err));
+        .catch((err) => {
+          console.error(err.message);
+          setErrors({
+            type: err.message,
+            message: 'An error occurred while retrieving geo-locations.',
+          });
+          setErrorModal(true);
+        });
     };
 
     if (rABS) {
@@ -190,7 +195,7 @@ const Dashboard = (props) => {
         }
       })
       .catch((err) => {
-        console.log(err.message);
+        console.error(err.message);
         setErrors({
           type: err.message,
           message: 'A property with the listed notice_number is already in our database.  Please remove that row from the Excel'
@@ -200,12 +205,12 @@ const Dashboard = (props) => {
       });
   };
 
-  const handlePinClick = () => {
+  const handlePinClick = (listingsIdx) => {
     // update state as well after modifying a property
+
   };
 
-  // USEEFFECT to call API for properties data on mount
-  useEffect(() => {
+  const fetchListings = () => {
     const url = `${api}/listings`;
     fetch(url, {
       method: 'GET',
@@ -220,8 +225,20 @@ const Dashboard = (props) => {
         setListings(json.success);
         console.log(json);
       })
-      .catch(err => console.log(err));
-  }, [api, token]);
+      .catch((err) => {
+        console.error(err.message);
+        setErrors({
+          type: err.message,
+          message: 'An error occurred while fetching properties.',
+        });
+        setErrorModal(true);
+      });
+  };
+
+  // USEEFFECT to call API for properties data on mount
+  useEffect(() => {
+    fetchListings();
+  }, []);
 
   return (
     <FullContainer
@@ -263,10 +280,35 @@ const Dashboard = (props) => {
         id="dashboard-content-container"
         className={classes.content}
       >
-        {view === 'map' && listings && <PropertyMap listings={listings} />}
-        {view === 'properties' && <PropertyDetails />}
-        {view === 'import' && <Import handlePreview={handlePreview} />}
-        {view === 'admin' && <Info />}
+        {
+          view === 'map' && listings
+          && (
+            <PropertyMap
+              listings={listings}
+              handlePinClick={handlePinClick}
+            />
+          )
+        }
+        {
+          view === 'properties'
+          && (
+          <PropertyDetails
+            listings={listings}
+          />
+          )
+        }
+        {
+          view === 'import'
+          && (
+          <Import
+            handlePreview={handlePreview}
+          />
+          )
+        }
+        {
+          view === 'admin'
+          && <Info />
+        }
       </DashboardContent>
       {
         dashModal && (

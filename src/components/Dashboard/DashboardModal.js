@@ -25,7 +25,6 @@ const DashboardModal = (props) => {
     modalType, modalData, openModal, closeModal, handleImport,
   } = props;
 
-  const api = process.env.API || 'http://localhost:3000/api/v1';
   const classes = useStyles();
   const [importInputs, setImportInputs] = useState(modalData);
 
@@ -40,26 +39,13 @@ const DashboardModal = (props) => {
     objToUpdate[e.target.name] = isNaN(e.target.value) ? e.target.value : Number(e.target.value);
     copy[i] = objToUpdate;
     setImportInputs(copy);
-    console.log(e.target.value);
   };
-
-  // const handleSubmit = (data) => {
-  //   console.log(importInputs);
-  //   // POST to api and save property into database
-  //   const url = `${api}/listings`
-  //   fetch(url, {
-  //     method: 'POST',
-  //     body: JSON.stringify(data),
-  //   })
-  // };
 
   let content;
   if (modalType === 'import_preview') {
     content = (
       <PreviewContainer id="import-preview-container">
-        <PreviewGrid
-          gridTemplateColumns={`repeat(${Object.keys(modalData[0]).length}, minmax(200px, 1fr))`}
-        >
+        <PreviewGrid>
           {
             Object.keys(modalData[0]).map(field => (
               <Typography
@@ -73,23 +59,26 @@ const DashboardModal = (props) => {
           }
           {
             modalData.map((obj, i) => Object.entries(obj).map((entry => (
-              entry[0] === 'property_address' || entry[0] === 'city' || entry[0] === 'zip' || entry[0] === 'lat' || entry[0] === 'long'
-                ? (
-                  <TextField
-                    key={`value-${entry[0]}`}
-                    name={entry[0]}
-                    variant="filled"
-                    className="sheet-values"
-                    label={entry[1] ? entry[1] : 'null'}
-                    margin="normal"
-                    style={{ overflowX: 'hidden', backgroundColor: 'lightgrey' }}
-                    defaultValue={entry[1] && !isNaN(Number(entry[1])) ? Number(entry[1]) : entry[1] ? entry[1] : 'null'}
-                    disabled
-                  >
-                    {
+              entry[0] === 'property_address'
+              || entry[0] === 'city'
+              || entry[0] === 'zip'
+              || entry[0] === 'lat'
+              || entry[0] === 'long' ? (
+                <TextField
+                  key={`value-${entry[0]}`}
+                  name={entry[0]}
+                  variant="filled"
+                  className="sheet-values"
+                  label={entry[1] ? entry[1] : 'null'}
+                  margin="normal"
+                  style={{ overflowX: 'hidden', backgroundColor: 'lightgrey' }}
+                  defaultValue={entry[1] && !isNaN(Number(entry[1])) ? Number(entry[1]) : entry[1] ? entry[1] : 'null'}
+                  disabled
+                >
+                  {
                     entry[1] ? entry[1] : 'null'
                   }
-                  </TextField>
+                </TextField>
                 )
                 : (
                   <TextField

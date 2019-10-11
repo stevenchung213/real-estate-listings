@@ -12,8 +12,8 @@ import ProtectedRoute from './ProtectedRoute';
 const Main = (props) => {
   const api = process.env.API || 'http://localhost:3000/api/v1';
 
-  const [userinfo, setUserinfo] = useState({
-    userID: '',
+  const [userInfo, setUserInfo] = useState({
+    userId: '',
     username: '',
     loggingIn: false,
     loggedIn: false,
@@ -27,17 +27,8 @@ const Main = (props) => {
     message: '',
   });
 
-  useEffect(() => {
-    const token = JSON.parse(localStorage.getItem('token')) || null;
-    if (token) {
-      console.log(`main component mounted\n${token}`);
-      setUserinfo(token);
-      props.history.replace('/dashboard');
-    }
-  }, []);
-
   const authUser = (userObj) => {
-    setUserinfo(currentState => ({
+    setUserInfo(currentState => ({
       ...currentState,
       loggingIn: true,
     }));
@@ -55,15 +46,15 @@ const Main = (props) => {
       .then((resp) => {
         console.log(resp);
         if (resp.token) {
-          setUserinfo({
-            userID: resp.userID,
+          setUserInfo({
+            userId: resp.userId,
             username: resp.username,
             token: resp.token,
             loggingIn: false,
             loggedIn: true,
           });
           const cookie = {
-            userID: resp.userID,
+            userId: resp.userId,
             username: resp.username,
             token: resp.token,
             loggingIn: false,
@@ -76,7 +67,7 @@ const Main = (props) => {
             type: '403 Forbidden Access',
             message: 'Invalid credentials',
           });
-          setUserinfo(currentState => ({
+          setUserInfo(currentState => ({
             ...currentState,
             loggingIn: false,
             loggedIn: false,
@@ -85,10 +76,20 @@ const Main = (props) => {
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.error(`An error occurred while authenticating user.\n`, err);
       });
   };
-  console.log(userinfo);
+
+  useEffect(() => {
+    const token = JSON.parse(localStorage.getItem('token')) || null;
+    if (token) {
+      console.log(`main component mounted\n${token}`);
+      setUserInfo(token);
+      props.history.replace('/dashboard');
+    }
+  }, []);
+
+  console.log(userInfo);
   return (
     <FullContainer id="main-container">
       <Switch>
@@ -111,8 +112,8 @@ const Main = (props) => {
           component={Dashboard}
           setErrors={setErrors}
           setErrorModal={setErrorModal}
-          loggedIn={userinfo.loggedIn}
-          user={userinfo}
+          loggedIn={userInfo.loggedIn}
+          user={userInfo}
         />
         <Route component={NoMatch} />
       </Switch>
