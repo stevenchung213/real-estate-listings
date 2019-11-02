@@ -15,14 +15,11 @@ import {
 import XLSX from 'xlsx';
 import PropertyMap from './Map';
 import PropertyDetails from './PropertyDetails';
+import Admin from './Admin';
 import Import from './Import';
-import Info from './Info';
 import { FullContainer } from '../styles';
 import { DashboardContent } from './Dashboard.styled';
 import DashboardModal from './DashboardModal';
-import ErrorModal from '../ErrorModal';
-
-const drawerWidth = 180;
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,12 +29,12 @@ const useStyles = makeStyles(theme => ({
     zIndex: theme.zIndex.drawer + 1,
   },
   drawer: {
-    width: drawerWidth,
+    width: 180,
     flexShrink: 0,
   },
   drawerPaper: {
     paddingTop: 18,
-    width: drawerWidth,
+    width: 180,
   },
   content: {
     flexGrow: 1,
@@ -48,48 +45,86 @@ const useStyles = makeStyles(theme => ({
 
 const Dashboard = (props) => {
   const api = process.env.API || 'http://localhost:3000/api/v1';
-  const classes = useStyles();
-  const navLinks = [
-    {
-      name: 'Map',
-      view: 'map',
-      icon: <Explore />,
-    },
-    {
-      name: 'Properties',
-      view: 'properties',
-      icon: <House />,
-    },
-    {
-      name: 'Import',
-      view: 'import',
-      icon: <Add />,
-    },
-    {
-      name: 'Admin',
-      view: 'admin',
-      icon: <Person />,
-    },
-  ];
-
   const {
     user, setErrors, setErrorModal, history,
   } = props;
-  const { username, token } = user;
+  const { username, token, admin } = user;
+  const classes = useStyles();
+  const navLinks = admin
+    ? [
+      {
+        name: 'Map',
+        view: 'map',
+        icon: <Explore />,
+      },
+      {
+        name: 'Properties',
+        view: 'properties',
+        icon: <House />,
+      },
+      {
+        name: 'Import',
+        view: 'import',
+        icon: <Add />,
+      },
+      {
+        name: 'Admin',
+        view: 'admin',
+        icon: <Person />,
+      },
+    ]
+    : [
+      {
+        name: 'Map',
+        view: 'map',
+        icon: <Explore />,
+      },
+      {
+        name: 'Properties',
+        view: 'properties',
+        icon: <House />,
+      },
+      {
+        name: 'Import',
+        view: 'import',
+        icon: <Add />,
+      },
+    ];
 
   const [view, setView] = useState('map');
+  const [listings, setListings] = useState(null);
   const [dashModal, setDashModal] = useState(false);
   const [dashModalData, setDashModalData] = useState({
     type: '',
     data: null,
   });
-  const [listings, setListings] = useState(null);
+
+  const handleDashboardModals = (type, data) => {
+    if (!dashModal) {
+      setDashModalData({
+        type,
+        data,
+      });
+      setDashModal(true);
+    } else {
+      setDashModal(false);
+      setDashModalData({
+        type: '',
+        data: null,
+      });
+    }
+  };
+
+  const handlePinClick = (listingsIdx) => {
+    // update state as well after modifying a property
+
+  };
 
   const geocode = (address, city, zip = '') => {
     const apiKey = process.env.GOOGLE_MAPS_APIKEY;
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${address.split(' ').join('+')},+${city.split(' ').join('+')},+${zip}+&key=${apiKey}`;
-    console.log(url);
-
+    const base = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
+    const query = `${address.split(' ').join('+')},+${city.split(' ').join('+')},+${zip}+&key=${apiKey}`;
+    const url = `${base}${query}`;
     return fetch(url).then(res => res.json());
   };
 
@@ -145,11 +180,7 @@ const Dashboard = (props) => {
         }
       })
         .then(() => {
-          setDashModalData({
-            type: 'import_preview',
-            data: formattedData,
-          });
-          setDashModal(true);
+          handleDashboardModals('import_preview', formattedData);
         })
         .catch((err) => {
           console.error(err.message);
@@ -205,11 +236,6 @@ const Dashboard = (props) => {
       });
   };
 
-  const handlePinClick = (listingsIdx) => {
-    // update state as well after modifying a property
-
-  };
-
   const fetchListings = () => {
     const url = `${api}/listings`;
     fetch(url, {
@@ -238,7 +264,7 @@ const Dashboard = (props) => {
   // USEEFFECT to call API for properties data on mount
   useEffect(() => {
     fetchListings();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <FullContainer
@@ -292,22 +318,22 @@ const Dashboard = (props) => {
         {
           view === 'properties'
           && (
-          <PropertyDetails
-            listings={listings}
-          />
+            <PropertyDetails
+              listings={listings}
+            />
           )
         }
         {
           view === 'import'
           && (
-          <Import
-            handlePreview={handlePreview}
-          />
+            <Import
+              handlePreview={handlePreview}
+            />
           )
         }
         {
           view === 'admin'
-          && <Info />
+          && <Admin />
         }
       </DashboardContent>
       {

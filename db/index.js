@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt');
 const SALT_WORK_FACTOR = 10;
 
 // connection
-
 const mongoUri = process.env.DATABASE || 'mongodb://localhost:27017/real-estate-listings';
 
 mongoose.connect(mongoUri, {
@@ -17,10 +16,10 @@ mongoose.connect(mongoUri, {
 
 
 // schemas
-
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, index: { unique: true } },
   password: { type: String, required: true },
+  admin: { type: Boolean, required: true },
   properties: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Property' }],
   notes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Note' }],
 });

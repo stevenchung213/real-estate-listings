@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -35,11 +35,14 @@ const styles = theme => ({
 
 const SignUp = (props) => {
   const api = process.env.API || 'http://localhost:3000/api/v1';
+  const admin_pw = process.env.ADMIN_PW || '123456';
   const { classes, setErrors, setErrorModal } = props;
 
   const [userinfo, setUserinfo] = useState({
     username: '',
     password: '',
+    adminPassword: '',
+    admin: false,
     submitting: false,
     complete: false,
   });
@@ -55,8 +58,8 @@ const SignUp = (props) => {
   const submit = (e) => {
     e.preventDefault();
     console.log('init\n', userinfo);
-    const { username, password } = userinfo;
-    // Validation
+    const { username, password, adminPassword } = userinfo;
+    // form validation
     // requires '.' between first and last name
     if (!username.includes('.')) {
       setErrors({
@@ -91,13 +94,17 @@ const SignUp = (props) => {
       return;
     }
 
+    // admin check
+    const admin = adminPassword === admin_pw;
+
+    // disable sign up button until completed
     setUserinfo(currentState => ({
       ...currentState,
       submitting: true,
     }));
 
     const url = `${api}/register`;
-    const user = { username, password };
+    const user = { username, password, admin };
 
     fetch(url, {
       method: 'POST',
@@ -110,7 +117,6 @@ const SignUp = (props) => {
           ...currentState,
           submitting: false,
         }));
-        // if account exists
         if (resp.message) {
           setErrors({
             type: 'Username Exists',
@@ -119,7 +125,6 @@ const SignUp = (props) => {
           setErrorModal(true);
           return;
         }
-        // if some other error
         if (resp.error) {
           setErrors({
             type: 'Unknown Error',
@@ -128,19 +133,15 @@ const SignUp = (props) => {
           setErrorModal(true);
           return;
         }
-        // upon success
-        // alert(`account creation successful\nplease log in`);
         setErrors({
           type: 'Account Created',
-          message: 'Account created!  Redirecting to log in...',
+          message: 'Account created!  Click out of this box to go to log in screen.',
         });
         setErrorModal(true);
-        setTimeout(() => {
-          setUserinfo(currentState => ({
-            ...currentState,
-            complete: true,
-          }));
-        }, 1000);
+        setUserinfo(currentState => ({
+          ...currentState,
+          complete: true,
+        }));
       })
       .catch((err) => {
         console.log(err);
@@ -205,6 +206,30 @@ const SignUp = (props) => {
                     </Grid>
                   </Grid>
                 </div>
+                <div className={classes.margin}>
+                  <Grid
+                    container
+                    spacing={1}
+                    alignItems="flex-end"
+                  >
+                    <Grid
+                      item
+                      className={classes.icon}
+                    >
+                      <VpnKey fontSize="large" />
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                        id="password-username-input"
+                        label="admin password"
+                        className={classes.textField}
+                        name="adminPassword"
+                        onChange={handleChange}
+                        helperText="not required"
+                      />
+                    </Grid>
+                  </Grid>
+                </div>
                 <br />
                 <Button
                   variant="contained"
@@ -213,7 +238,7 @@ const SignUp = (props) => {
                   fullWidth
                   disabled={userinfo.submitting}
                 >
-                sign up
+                  sign up
                   <Done className={classes.rightIcon} />
                 </Button>
               </form>

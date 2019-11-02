@@ -2,9 +2,10 @@ import styled from 'styled-components';
 
 export const PropertiesGrid = styled.div`
   display: grid;
-  grid-template-columns: ${props => props.gridTemplateColumns || 'repeat(23, minmax(200px, 1fr))'};
-  grid-gap: 10px;
-  margin-bottom: 20px;
+  grid-template-columns: ${props => props.gridTemplateColumns || 'repeat(auto-fit, minmax(240px, 1fr))'};
+  grid-gap: 20px;
   overflow: auto;
-  max-height: 90%;
+  padding: 25px;
+  justify-items: center;
+  text-align: center;
 `;

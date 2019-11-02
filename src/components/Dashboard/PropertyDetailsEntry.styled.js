@@ -10,3 +10,8 @@ export const EntryContainer = styled.div`
   max-height: ${props => props.maxHeight || 'none'};
   padding: ${props => props.padding || 0};
 `;
+
+export const FlexCaptionContainer = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+`;

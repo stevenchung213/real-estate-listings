@@ -18,6 +18,7 @@ const Main = (props) => {
     loggingIn: false,
     loggedIn: false,
     token: '',
+    admin: false,
   });
 
   const [errorModal, setErrorModal] = useState(false);
@@ -52,6 +53,7 @@ const Main = (props) => {
             token: resp.token,
             loggingIn: false,
             loggedIn: true,
+            admin: resp.admin,
           });
           const cookie = {
             userId: resp.userId,
@@ -59,6 +61,7 @@ const Main = (props) => {
             token: resp.token,
             loggingIn: false,
             loggedIn: true,
+            admin: resp.admin,
           };
           localStorage.setItem('sei-prep', JSON.stringify(cookie));
           props.history.push('/dashboard');

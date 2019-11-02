@@ -3,7 +3,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { PreviewGrid, PreviewContainer, StyledModal } from './DashboardModal.styled';
+import { PreviewGrid, StyledModal } from './DashboardModal.styled';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -42,9 +42,10 @@ const DashboardModal = (props) => {
   };
 
   let content;
+  // import modal
   if (modalType === 'import_preview') {
     content = (
-      <PreviewContainer id="import-preview-container">
+      <StyledModal id="import-preview-container">
         <PreviewGrid>
           {
             Object.keys(modalData[0]).map(field => (
@@ -111,7 +112,13 @@ const DashboardModal = (props) => {
         >
           submit
         </Button>
-      </PreviewContainer>
+      </StyledModal>
+    );
+
+  // property modal
+  } else if (modalType === 'property') {
+    content = (
+      <StyledModal />
     );
   }
   console.log(modalData);

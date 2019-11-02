@@ -34,14 +34,14 @@ router.use((req, res, next) => {
 
 router.post('/register', (req, res) => {
   console.log(`post request from ${req.originalUrl}\n at ${req.url}`, req.body);
-  const { username, password } = req.body;
+  const { username, password, admin } = req.body;
   // check if user exists in database
   Users.find({ username }).exec()
     .then((resp) => {
       // if user does NOT exist
       if (resp.length === 0) {
         // create new user document
-        const newUser = new Users({ username, password });
+        const newUser = new Users({ username, password, admin });
         newUser.save()
           .then(() => res.status(200).json({ success: 'registration', username }))
           .catch(err => console.error(`error: saving new user\n${err}`));
@@ -79,6 +79,7 @@ router.post('/login', (req, res) => {
           res.status(200).json({
             userID: user._id,
             username: user.username,
+            admin: user.admin,
             token,
           });
         } else {
