@@ -115,9 +115,9 @@ const Dashboard = (props) => {
     }
   };
 
-  const handlePinClick = (listingsIdx) => {
+  const handlePropertyClick = (listingsIdx) => {
     // update state as well after modifying a property
-
+    console.log(`clicked on listings[ ${listingsIdx} ]`)
   };
 
   const geocode = (address, city, zip = '') => {
@@ -199,43 +199,6 @@ const Dashboard = (props) => {
     }
   };
 
-  const handleImport = (data) => {
-    // POST to api and save property into database
-    const url = `${api}/listings`;
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then((json) => {
-        // successful import modal
-        console.log(json);
-        if (json.error) {
-          throw Error(json.error.errmsg);
-        } else {
-          setErrors({
-            type: 'Success',
-            message: 'Properties have been imported successfully!',
-          });
-          setErrorModal(true);
-          setDashModal(false);
-        }
-      })
-      .catch((err) => {
-        console.error(err.message);
-        setErrors({
-          type: err.message,
-          message: 'A property with the listed notice_number is already in our database.  Please remove that row from the Excel'
-            + ' spreadsheet then try again.',
-        });
-        setErrorModal(true);
-      });
-  };
-
   const fetchListings = () => {
     const url = `${api}/listings`;
     fetch(url, {
@@ -247,7 +210,6 @@ const Dashboard = (props) => {
     })
       .then(res => res.json())
       .then((json) => {
-        // set state for property listings data
         setListings(json.success);
         console.log(json);
       })
@@ -261,7 +223,42 @@ const Dashboard = (props) => {
       });
   };
 
-  // USEEFFECT to call API for properties data on mount
+  const handleImport = (data) => {
+    const url = `${api}/listings`;
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => res.json())
+      .then((json) => {
+        console.log(json);
+        if (json.error) {
+          throw Error(json.error.errmsg);
+        } else {
+          setErrors({
+            type: 'Success',
+            message: 'Properties have been imported successfully!',
+          });
+          setErrorModal(true);
+          setDashModal(false);
+          fetchListings();
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+        setErrors({
+          type: err.message,
+          message: 'A property with the listed notice_number is already in our database.  Please remove that row from the Excel'
+            + ' spreadsheet then try again.',
+        });
+        setErrorModal(true);
+      });
+  };
+
   useEffect(() => {
     fetchListings();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -311,7 +308,7 @@ const Dashboard = (props) => {
           && (
             <PropertyMap
               listings={listings}
-              handlePinClick={handlePinClick}
+              handlePinClick={handlePropertyClick}
             />
           )
         }
@@ -320,6 +317,7 @@ const Dashboard = (props) => {
           && (
             <PropertyDetails
               listings={listings}
+              handlePropertyClick={handlePropertyClick}
             />
           )
         }

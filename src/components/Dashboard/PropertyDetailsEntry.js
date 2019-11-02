@@ -7,26 +7,30 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import { FlexCaptionContainer } from "./PropertyDetailsEntry.styled";
-// import { EntryContainer } from './PropertyDetailsEntry.styled';
-
-const useStyles = makeStyles({
-  card: {
-    width: 240,
-  },
-  media: {
-    height: 140,
-  },
-});
+import { FlexCaptionContainer } from './PropertyDetailsEntry.styled';
 
 const PropertyDetailsEntry = (props) => {
-  const { listing } = props;
+  const { listing, listingsIdx, handleCardClick } = props;
   const {
     agents, beneficiary, city, current_phone, estimated_value, mailing_city,
     mailing_zip, notice_date, notice_number, open_bid, original_loan_amount, owner_address,
     owner_name, property_address, sales_date, schedule_date, status, trustee_id,
     trustee_name, zip, _id,
   } = listing;
+
+  const statusColors = {
+    hotlead: '#afefad',
+    contacted: '#fdc47d',
+  };
+  const useStyles = makeStyles({
+    card: {
+      width: 240,
+      backgroundColor: statusColors[status],
+    },
+    media: {
+      height: 140,
+    },
+  });
   const classes = useStyles();
 
   console.log(props);
@@ -34,12 +38,7 @@ const PropertyDetailsEntry = (props) => {
     <Card
       className={classes.card}
       raised
-      style={
-        {
-          backgroundColor: status === 'hotlead' ? '#AFEFAD' : status === 'contacted' ? '#fdc47d' : 'white',
-        }
-      }
-      onClick={()=>{console.log('clicked on property card')}}
+      onClick={() => handleCardClick(listingsIdx)}
     >
       <CardActionArea>
         <CardMedia
@@ -67,39 +66,16 @@ const PropertyDetailsEntry = (props) => {
           </Typography>
         </CardContent>
       </CardActionArea>
-      {/*<CardActions>*/}
-      {/*  <Button size="small" color="primary">*/}
-      {/*    Share*/}
-      {/*  </Button>*/}
-      {/*  <Button size="small" color="primary">*/}
-      {/*    Learn More*/}
-      {/*  </Button>*/}
-      {/*</CardActions>*/}
+      <CardActions>
+        <Button size="small" color="primary">
+          Share
+        </Button>
+        <Button size="small" color="primary">
+          Learn More
+        </Button>
+      </CardActions>
     </Card>
   );
 };
-
-// const PropertyDetailsEntry = (props) => {
-//   const { listing, headers } = props;
-//   let content;
-//   if (headers) {
-//     content = Object.keys(listing).map(field => (
-//       <div>
-//         {field}
-//       </div>
-//     ));
-//   } else {
-//     content = Object.values(listing).map(value => (
-//       <div>
-//         {value}
-//       </div>
-//     ));
-//   }
-//   return (
-//     <EntryContainer className="property-details-entry-container">
-//       {content}
-//     </EntryContainer>
-//   );
-// };
 
 export default PropertyDetailsEntry;

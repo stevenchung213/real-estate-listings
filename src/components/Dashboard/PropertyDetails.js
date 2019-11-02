@@ -5,8 +5,7 @@ import PropertyDetailsEntry from './PropertyDetailsEntry';
 import { PropertiesGrid } from './PropertyDetails.styled';
 
 const PropertyDetails = (props) => {
-  const { listings } = props;
-
+  const { listings, handlePropertyClick } = props;
   return (
     <FlexContainer
       id="property-details-container"
@@ -17,10 +16,12 @@ const PropertyDetails = (props) => {
         && (
         <PropertiesGrid id="property-cards-grid">
           {
-            listings.map(listing => (
+            listings.map((listing, i) => (
               <PropertyDetailsEntry
                 key={listing.notice_number}
                 listing={listing}
+                listingsIdx={i}
+                handleCardClick={handlePropertyClick}
               />
             ))
           }
