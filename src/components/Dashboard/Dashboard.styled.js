@@ -11,7 +11,6 @@ export const DashboardContent = styled.div`
 
 
 /* SHARED STYLES */
-
 export const FlexContainer = styled.div`
   display: flex;
   flex-direction: column;

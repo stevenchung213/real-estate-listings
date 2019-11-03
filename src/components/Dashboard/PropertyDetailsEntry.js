@@ -10,12 +10,9 @@ import Typography from '@material-ui/core/Typography';
 import { FlexCaptionContainer } from './PropertyDetailsEntry.styled';
 
 const PropertyDetailsEntry = (props) => {
-  const { listing, listingsIdx, handleCardClick } = props;
+  const { listing, handleCardClick } = props;
   const {
-    agents, beneficiary, city, current_phone, estimated_value, mailing_city,
-    mailing_zip, notice_date, notice_number, open_bid, original_loan_amount, owner_address,
-    owner_name, property_address, sales_date, schedule_date, status, trustee_id,
-    trustee_name, zip, _id,
+    agents, beneficiary, city, current_phone, estimated_value, mailing_city, mailing_zip, notice_date, notice_number, open_bid, original_loan_amount, owner_address, owner_name, property_address, sales_date, schedule_date, status, trustee_id, trustee_name, zip, _id,
   } = listing;
 
   const statusColors = {
@@ -38,7 +35,7 @@ const PropertyDetailsEntry = (props) => {
     <Card
       className={classes.card}
       raised
-      onClick={() => handleCardClick(listingsIdx)}
+      onClick={() => handleCardClick(_id)}
     >
       <CardActionArea>
         <CardMedia

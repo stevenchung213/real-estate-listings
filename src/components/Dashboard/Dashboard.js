@@ -19,7 +19,8 @@ import Admin from './Admin';
 import Import from './Import';
 import { FullContainer } from '../styles';
 import { DashboardContent } from './Dashboard.styled';
-import DashboardModal from './DashboardModal';
+import ImportModal from './ImportModal';
+import PropertyModal from './PropertyModal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -93,31 +94,42 @@ const Dashboard = (props) => {
 
   const [view, setView] = useState('map');
   const [listings, setListings] = useState(null);
-  const [dashModal, setDashModal] = useState(false);
-  const [dashModalData, setDashModalData] = useState({
-    type: '',
-    data: null,
-  });
+  const [importModal, setImportModal] = useState(false);
+  const [importModalData, setImportModalData] = useState(null);
+  const [propertyModal, setPropertyModal] = useState(false);
+  const [propertyModalData, setPropertyModalData] = useState(null);
 
-  const handleDashboardModals = (type, data) => {
-    if (!dashModal) {
-      setDashModalData({
-        type,
-        data,
-      });
-      setDashModal(true);
+
+  const handlePropertyModal = (data) => {
+    if (!propertyModal) {
+      setPropertyModalData(data);
+      setPropertyModal(true);
     } else {
-      setDashModal(false);
-      setDashModalData({
-        type: '',
-        data: null,
-      });
+      setPropertyModal(false);
+      setPropertyModalData(null);
     }
   };
 
-  const handlePropertyClick = (listingsIdx) => {
+  const handleEditProperty = (property) => {
+    console.log('modifying: \n', property)
+  };
+
+  const handleImportModal = (data) => {
+    if (!importModal) {
+      setImportModalData(data);
+      setImportModal(true);
+    } else {
+      setImportModal(false);
+      setImportModalData(null);
+    }
+  };
+
+  const handlePropertyClick = (listingId) => {
     // update state as well after modifying a property
-    console.log(`clicked on listings[ ${listingsIdx} ]`)
+    console.log(`clicked on listings[ ${listingId} ]`);
+    const filtered = listings.filter(property => property._id === listingId);
+    const selected = filtered[0];
+    handlePropertyModal(selected);
   };
 
   const geocode = (address, city, zip = '') => {
@@ -180,7 +192,7 @@ const Dashboard = (props) => {
         }
       })
         .then(() => {
-          handleDashboardModals('import_preview', formattedData);
+          handleImportModal(formattedData);
         })
         .catch((err) => {
           console.error(err.message);
@@ -244,7 +256,7 @@ const Dashboard = (props) => {
             message: 'Properties have been imported successfully!',
           });
           setErrorModal(true);
-          setDashModal(false);
+          setImportModal(false);
           fetchListings();
         }
       })
@@ -335,13 +347,22 @@ const Dashboard = (props) => {
         }
       </DashboardContent>
       {
-        dashModal && (
-          <DashboardModal
-            openModal={dashModal}
-            closeModal={() => setDashModal(false)}
-            modalType={dashModalData.type}
-            modalData={dashModalData.data}
+        importModal && (
+          <ImportModal
+            openModal={importModal}
+            closeModal={handleImportModal}
+            modalData={importModalData}
             handleImport={handleImport}
+          />
+        )
+      }
+      {
+        propertyModal && (
+          <PropertyModal
+            openModal={propertyModal}
+            closeModal={handlePropertyModal}
+            modalData={propertyModalData}
+            handleEditProperty={handleEditProperty}
           />
         )
       }

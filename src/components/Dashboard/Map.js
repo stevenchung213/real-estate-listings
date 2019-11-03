@@ -21,7 +21,7 @@ const PropertyMap = (props) => {
         {
           listings.map((property, i) => {
             const {
-              status, lat, long, notice_number,
+              status, lat, long, notice_number, _id,
             } = property;
             let currentStatus;
             if (status === 'hotlead') {
@@ -37,7 +37,7 @@ const PropertyMap = (props) => {
                 lat={lat}
                 lng={long}
                 color={currentStatus}
-                onClick={() => handlePinClick(i)}
+                onClick={() => handlePinClick(_id)}
               />
             );
           })

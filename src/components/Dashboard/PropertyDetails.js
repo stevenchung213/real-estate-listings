@@ -16,11 +16,10 @@ const PropertyDetails = (props) => {
         && (
         <PropertiesGrid id="property-cards-grid">
           {
-            listings.map((listing, i) => (
+            listings.map(listing => (
               <PropertyDetailsEntry
                 key={listing.notice_number}
                 listing={listing}
-                listingsIdx={i}
                 handleCardClick={handlePropertyClick}
               />
             ))
