@@ -8,6 +8,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { FlexCaptionContainer } from './PropertyDetailsEntry.styled';
+import HomeImage from '../../assets/home.png';
 
 const PropertyDetailsEntry = (props) => {
   const { listing, handleCardClick } = props;
@@ -21,11 +22,8 @@ const PropertyDetailsEntry = (props) => {
   };
   const useStyles = makeStyles({
     card: {
-      width: 240,
+      width: 180,
       backgroundColor: statusColors[status],
-    },
-    media: {
-      height: 140,
     },
   });
   const classes = useStyles();
@@ -39,8 +37,10 @@ const PropertyDetailsEntry = (props) => {
     >
       <CardActionArea>
         <CardMedia
-          className={classes.media}
-          image="/static/images/cards/contemplative-reptile.jpg"
+          component="img"
+          alt={notice_number}
+          height="auto"
+          image={HomeImage}
           title={notice_number}
         />
         <CardContent>

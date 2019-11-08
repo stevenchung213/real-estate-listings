@@ -132,6 +132,10 @@ router.get('/listings', checkToken, (req, res) => {
     });
 });
 
+router.patch('/listings', checkToken, (req, res) => {
+  console.log(req)
+});
+
 // router.get('/data', checkToken, (req, res) => {
 //   console.log(req.headers, '\n')
 //   jwt.verify(req.token, key, (err, authorizedData) => {

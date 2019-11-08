@@ -3,6 +3,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
 import { PreviewContainer, PreviewGrid, StyledModal } from './ImportModal.styled';
 
 const useStyles = makeStyles(theme => ({
@@ -24,25 +25,30 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ImportModal = (props) => {
-  const { modalData, openModal, closeModal, handleImport } = props;
+  const {
+    modalData, openModal, closeModal, handleImport,
+  } = props;
 
   const classes = useStyles();
-  const [importInputs, setImportInputs] = useState(null);
-
-  useEffect(() => {
-    setImportInputs(modalData);
-  }, [modalData]);
+  const [importInputs, setImportInputs] = useState(modalData);
+  const statuses = ['hotlead', 'contacted', 'left_note', 'done'];
 
   const handleChange = (e, i) => {
     e.persist();
+    // importInputs is an array of objects
     const copy = [...importInputs];
     const objToUpdate = { ...importInputs[i] };
-    objToUpdate[e.target.name] = isNaN(e.target.value) ? e.target.value : Number(e.target.value);
+    if (e.target.name === 'status') {
+      console.log('test test test')
+      objToUpdate[e.target.name] = e.target.value;
+    } else {
+      objToUpdate[e.target.name] = isNaN(e.target.value) ? e.target.value : Number(e.target.value);
+    }
     copy[i] = objToUpdate;
     setImportInputs(copy);
   };
 
-  console.log(props);
+  console.log(importInputs);
   return (
     <StyledModal
       id="import-modal-backdrop-container"
@@ -56,7 +62,7 @@ const ImportModal = (props) => {
         <PreviewContainer id="import-preview-container">
           <PreviewGrid>
             {
-              Object.keys(modalData[0]).map(field => (
+              Object.keys(importInputs[0]).map(field => (
                 <Typography
                   key={`field-${field.split(' ').join('_').toLowerCase()}`}
                   variant="subtitle2"
@@ -67,47 +73,70 @@ const ImportModal = (props) => {
               ))
             }
             {
-              modalData.map((obj, i) => Object.entries(obj).map((entry => (
+              importInputs.map((obj, i) => Object.entries(obj).map((entry => (
                 entry[0] === 'property_address'
                 || entry[0] === 'city'
                 || entry[0] === 'zip'
                 || entry[0] === 'lat'
                 || entry[0] === 'long' ? (
-                    <TextField
-                      key={`value-${entry[0]}`}
-                      name={entry[0]}
-                      variant="filled"
-                      className="sheet-values"
-                      label={entry[1] ? entry[1] : 'null'}
-                      margin="normal"
-                      style={{ overflowX: 'hidden', backgroundColor: 'lightgrey' }}
-                      defaultValue={entry[1] && !isNaN(Number(entry[1])) ? Number(entry[1]) : entry[1] ? entry[1] : 'null'}
-                      disabled
-                    >
-                      {
+                  <TextField
+                    key={`value-${entry[0]}`}
+                    name={entry[0]}
+                    className="sheet-values"
+                    label={entry[1] ? entry[1] : 'null'}
+                    margin="normal"
+                    style={{ overflowX: 'hidden', backgroundColor: 'lightgrey' }}
+                    defaultValue={entry[1] && !isNaN(Number(entry[1])) ? Number(entry[1]) : entry[1] ? entry[1] : 'null'}
+                    disabled
+                  >
+                    {
                         entry[1] ? entry[1] : 'null'
                       }
-                    </TextField>
+                  </TextField>
                   )
-                  : (
-                    <TextField
-                      key={`value-${entry[0]}`}
-                      name={entry[0]}
-                      variant="filled"
-                      className="sheet-values"
-                      label={entry[1] ? entry[1] : 'null'}
-                      margin="normal"
-                      style={{ overflowX: 'hidden', backgroundColor: i % 2 === 0 ? 'lightyellow' : 'lightblue' }}
-                      defaultValue={entry[1] ? entry[1] : 'null'}
-                      onChange={(e) => {
-                        handleChange(e, i);
-                      }}
-                    >
-                      {
+                  : entry[0] === 'status'
+                    ? (
+                      <TextField
+                        select
+                        label="select status"
+                        className={classes.textField}
+                        name={entry[0]}
+                        value={entry[1]}
+                        onChange={e => handleChange(e, i)}
+                        SelectProps={{
+                          MenuProps: {
+                            className: classes.menu,
+                          },
+                        }}
+                        margin="normal"
+                      >
+                        {
+                        statuses.map(option => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))
+                      }
+                      </TextField>
+                    )
+                    : (
+                      <TextField
+                        key={`value-${entry[0]}`}
+                        name={entry[0]}
+                        className="sheet-values"
+                        label={entry[1] ? entry[1] : 'null'}
+                        margin="normal"
+                        style={{ overflowX: 'hidden', backgroundColor: i % 2 === 0 ? 'lightyellow' : 'lightblue' }}
+                        defaultValue={entry[1] ? entry[1] : 'null'}
+                        onChange={(e) => {
+                          handleChange(e, i);
+                        }}
+                      >
+                        {
                         entry[1] ? entry[1] : 'null'
                       }
-                    </TextField>
-                  )
+                      </TextField>
+                    )
               ))))
             }
           </PreviewGrid>
