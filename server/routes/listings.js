@@ -12,11 +12,9 @@ const checkToken = (req, res, next) => {
   const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
   console.log(token);
   if (!token) {
-    console.log('aaaaaaaaaaaaaaaaaaaaaaa');
     res.status(401).json({ message: 'Unauthorized: Invalid token' });
   } else {
     jwt.verify(token, key, (err) => {
-      console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbb');
       if (err) {
         console.error('cccccccccccccccccccccc\n', err);
         res.status(401).json({ message: 'Unauthorized: Invalid token' });
@@ -102,9 +100,9 @@ router.post('/listings', checkToken, (req, res) => {
   const documentsArr = req.body;
   Properties.insertMany(documentsArr, (err, docs) => {
     if (err) {
-      console.error(`error: while inserting document at ${req.originalUrl}\n`, err);
-      res.status(409).json({
-        message: `Duplicate property conflict error at ${req.originalUrl}`,
+      console.error(`error: while inserting documents at ${req.originalUrl}\n`, err);
+      res.status(500).json({
+        message: `An error occurred while inserting documents at ${req.originalUrl}`,
         error: err,
       });
     } else {

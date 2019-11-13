@@ -97,6 +97,7 @@ const ImportModal = (props) => {
                   : entry[0] === 'status'
                     ? (
                       <TextField
+                        key={`value-${entry[0]}`}
                         select
                         label="select status"
                         className={classes.textField}

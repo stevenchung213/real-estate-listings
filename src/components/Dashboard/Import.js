@@ -12,7 +12,7 @@ const Import = (props) => {
   return (
     <FlexContainer
       id="import-container"
-      padding="8px"
+      padding="30px 0"
     >
       <DropzoneContainer
         id="dropzone-container"

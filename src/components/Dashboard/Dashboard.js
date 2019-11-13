@@ -18,9 +18,10 @@ import PropertyDetails from './PropertyDetails';
 import Admin from './Admin';
 import Import from './Import';
 import { FullContainer } from '../styles';
-import { DashboardContent } from './Dashboard.styled';
+import { DashboardContent, TopbarContainer } from './Dashboard.styled';
 import ImportModal from './ImportModal';
 import PropertyModal from './PropertyModal';
+import FilterToolbar from './FilterToolbar';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,12 +31,13 @@ const useStyles = makeStyles(theme => ({
     zIndex: theme.zIndex.drawer + 1,
   },
   drawer: {
-    width: 180,
+    width: 58,
     flexShrink: 0,
   },
   drawerPaper: {
-    paddingTop: 18,
-    width: 180,
+    width: 58,
+    paddingTop: 12,
+    overflow: 'hidden',
   },
   content: {
     flexGrow: 1,
@@ -98,7 +100,23 @@ const Dashboard = (props) => {
   const [importModalData, setImportModalData] = useState(null);
   const [propertyModal, setPropertyModal] = useState(false);
   const [propertyModalData, setPropertyModalData] = useState(null);
+  const [filter, setFilter] = useState(false);
+  const [spanish, setSpanish] = useState(false);
 
+  const changeView = (view) => {
+    setView(view);
+  };
+
+  const formatUsername = (name) => {
+    const splitName = name.split('.');
+    const firstName = splitName[0].charAt(0).toUpperCase() + splitName[0].slice(1);
+    const lastName = splitName[1].charAt(0).toUpperCase() + splitName[1].slice(1);
+    return `${firstName} ${lastName}`;
+  };
+
+  const handleSpanish = (bool) => {
+    setSpanish(bool);
+  };
 
   const handlePropertyModal = (data) => {
     if (!propertyModal) {
@@ -111,7 +129,40 @@ const Dashboard = (props) => {
   };
 
   const handleEditProperty = (property) => {
-    console.log('modifying: \n', property)
+    console.log('modifying: \n', property);
+  };
+
+  const handleFilters = (filterType) => {
+    const filters = [
+      {
+        type: 'View All',
+        values: null,
+      },
+      {
+        type: 'By Status',
+        values: ['HOT Lead', 'Contacted', 'Left Note', 'Done'],
+      },
+      {
+        type: 'Date',
+        values: ['Last 30 Days', 'Last 7 Days'],
+      },
+      {
+        type: 'Spanish',
+        values: null,
+      },
+    ];
+    const filterMap = {
+      hotlead: 'HOT Lead',
+      contact: 'Contact',
+      left_note: 'Left Note',
+      done: 'Done',
+
+    };
+  };
+
+  const handleSpanishFilter = () => {
+    const copy = [...listings];
+
   };
 
   const handleImportModal = (data) => {
@@ -137,6 +188,7 @@ const Dashboard = (props) => {
     const base = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
     const query = `${address.split(' ').join('+')},+${city.split(' ').join('+')},+${zip}+&key=${apiKey}`;
     const url = `${base}${query}`;
+    console.log(url);
     return fetch(url).then(res => res.json());
   };
 
@@ -170,7 +222,7 @@ const Dashboard = (props) => {
           // remove $ sign from values before sending to database
           if (value.length === 0) {
             rowObj[field] = '';
-          } else if (field === 'estimated_value') {
+          } else if (field === 'estimated_value' || field === 'original_loan_amount') {
             rowObj[field] = Number(value.slice(1).split(',').join(''));
           } else if (!isNaN(Number(value))) {
             rowObj[field] = Number(value);
@@ -264,8 +316,7 @@ const Dashboard = (props) => {
         console.error(err.message);
         setErrors({
           type: err.message,
-          message: 'A property with the listed notice_number is already in our database.  Please remove that row from the Excel'
-            + ' spreadsheet then try again.',
+          message: 'An error occurred while importing. Contact administrator.',
         });
         setErrorModal(true);
       });
@@ -275,17 +326,42 @@ const Dashboard = (props) => {
     fetchListings();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+
+  }, []);
+
+  const toolbarContent = view === 'map' || view === 'properties'
+    ? (
+      <FilterToolbar
+        spanish={spanish}
+        handleSpanish={handleSpanish}
+        handleFilters={handleFilters}
+      />
+    )
+    : null;
+
+  console.log(listings)
+
   return (
     <FullContainer
       id="dashboard-container"
       className={classes.root}
     >
       <CssBaseline />
-      <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar>
-          <Typography variant="h5" noWrap>
-            {`${username}`}
-          </Typography>
+      <AppBar
+        position="fixed"
+        className={classes.appBar}
+        color="default"
+      >
+        <Toolbar variant="dense">
+          <TopbarContainer>
+            <Typography variant="h5" noWrap>
+              {`${formatUsername(username)}`}
+            </Typography>
+            {
+              toolbarContent
+            }
+          </TopbarContainer>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -300,12 +376,11 @@ const Dashboard = (props) => {
               <ListItem
                 button
                 key={`nav-${nav.view}`}
-                onClick={() => setView(`${nav.view}`)}
+                onClick={() => changeView(`${nav.view}`)}
               >
                 <ListItemIcon>
                   {nav.icon}
                 </ListItemIcon>
-                <ListItemText primary={nav.name} />
               </ListItem>
             </List>
           ))

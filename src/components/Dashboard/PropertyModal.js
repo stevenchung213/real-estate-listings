@@ -86,6 +86,7 @@ const PropertyModal = (props) => {
                 field === 'status'
                   ? (
                     <TextField
+                      key={field}
                       select
                       label={titleCase(field)}
                       className={classes.textField}
@@ -111,6 +112,7 @@ const PropertyModal = (props) => {
                   )
                   : (
                     <TextField
+                      key={field}
                       label={titleCase(field)}
                       className={classes.textField}
                       name={field}
