@@ -4,6 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
+import Switch from '@material-ui/core/Switch';
 import { PreviewContainer, PreviewGrid, StyledModal } from './ImportModal.styled';
 
 const useStyles = makeStyles(theme => ({
@@ -39,7 +40,7 @@ const ImportModal = (props) => {
     const copy = [...importInputs];
     const objToUpdate = { ...importInputs[i] };
     if (e.target.name === 'status') {
-      console.log('test test test')
+      console.log('test test test');
       objToUpdate[e.target.name] = e.target.value;
     } else {
       objToUpdate[e.target.name] = isNaN(e.target.value) ? e.target.value : Number(e.target.value);
@@ -120,24 +121,34 @@ const ImportModal = (props) => {
                       }
                       </TextField>
                     )
-                    : (
-                      <TextField
-                        key={`value-${entry[0]}`}
-                        name={entry[0]}
-                        className="sheet-values"
-                        label={entry[1] ? entry[1] : 'null'}
-                        margin="normal"
-                        style={{ overflowX: 'hidden', backgroundColor: i % 2 === 0 ? 'lightyellow' : 'lightblue' }}
-                        defaultValue={entry[1] ? entry[1] : 'null'}
-                        onChange={(e) => {
-                          handleChange(e, i);
-                        }}
-                      >
-                        {
-                        entry[1] ? entry[1] : 'null'
-                      }
-                      </TextField>
-                    )
+                    : entry[0] === 'spanish'
+                      ? (
+                        <Switch
+                          key={`value-${entry[0]}`}
+                          checked={entry[1]}
+                          onChange={() => console.log('***spanish toggle on import***')}
+                          color="primary"
+                          value="spanish"
+                        />
+                      )
+                      : (
+                        <TextField
+                          key={`value-${entry[0]}`}
+                          name={entry[0]}
+                          className="sheet-values"
+                          label={entry[1] ? entry[1] : 'null'}
+                          margin="normal"
+                          style={{ overflowX: 'hidden', backgroundColor: i % 2 === 0 ? 'lightyellow' : 'lightblue' }}
+                          defaultValue={entry[1] ? entry[1] : 'null'}
+                          onChange={(e) => {
+                            handleChange(e, i);
+                          }}
+                        >
+                          {
+                          entry[1] ? entry[1] : 'null'
+                        }
+                        </TextField>
+                      )
               ))))
             }
           </PreviewGrid>

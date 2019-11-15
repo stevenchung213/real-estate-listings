@@ -124,7 +124,7 @@ router.get('/listings', checkToken, (req, res) => {
     .catch((err) => {
       console.error(`error: while finding documents at ${req.originalUrl}\n`, err);
       res.status(500).json({
-        message: `Error fetching documents from database at ${req.originalUrl}`,
+        message: `An error occurred while fetching documents at ${req.originalUrl}`,
         error: err,
       });
     });

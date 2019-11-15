@@ -22,6 +22,7 @@ import { DashboardContent, TopbarContainer } from './Dashboard.styled';
 import ImportModal from './ImportModal';
 import PropertyModal from './PropertyModal';
 import FilterToolbar from './FilterToolbar';
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -95,6 +96,7 @@ const Dashboard = (props) => {
     ];
 
   const [view, setView] = useState('map');
+  const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState(null);
   const [importModal, setImportModal] = useState(false);
   const [importModalData, setImportModalData] = useState(null);
@@ -151,6 +153,7 @@ const Dashboard = (props) => {
         values: null,
       },
     ];
+
     const filterMap = {
       hotlead: 'HOT Lead',
       contact: 'Contact',
@@ -199,6 +202,7 @@ const Dashboard = (props) => {
     const reader = new FileReader();
     const rABS = !!reader.readAsBinaryString;
     const formattedData = [];
+    setLoading(true);
     reader.onload = async (ev) => {
       // parse data
       const bstr = ev.target.result;
@@ -208,16 +212,16 @@ const Dashboard = (props) => {
       const ws = wb.Sheets[wsname];
       // convert array of arrays
       const jsonSheet = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: false });
-      // update state
+      // separate fields and values
       const filtered = jsonSheet.filter(row => row[0]);
-      const fields = filtered[0];
+      const fields = [...filtered[0], 'spanish'];
       const values = filtered.slice(1);
       console.log('Import.values\n', values, '\n', fields);
       // format sheet data
       for (let i = 0; i < values.length; i++) {
         const rowObj = {};
         for (let j = 0; j < values[i].length; j++) {
-          const field = fields[j].split(' ').join('_').toLowerCase();
+          const field = !fields[j] ? fields[j] : fields[j].split(' ').join('_').toLowerCase();
           const value = values[i][j];
           // remove $ sign from values before sending to database
           if (value.length === 0) {
@@ -229,9 +233,15 @@ const Dashboard = (props) => {
           } else {
             rowObj[field] = value.toString();
           }
+          console.log(j, rowObj);
+          if (j === values[i].length - 1) {
+            rowObj.spanish = false;
+          }
         }
         formattedData.push(rowObj);
       }
+      // add spanish
+      console.log(formattedData)
       // geocode address to lat & long
       const getGeoLocations = async arr => arr.map(listing => geocode(listing.property_address, listing.city, listing.zip));
       const test = await getGeoLocations(formattedData);
@@ -245,9 +255,11 @@ const Dashboard = (props) => {
       })
         .then(() => {
           handleImportModal(formattedData);
+          setLoading(false);
         })
         .catch((err) => {
           console.error(err.message);
+          setLoading(false);
           setErrors({
             type: err.message,
             message: 'An error occurred while retrieving geo-locations.',
@@ -363,6 +375,9 @@ const Dashboard = (props) => {
             }
           </TopbarContainer>
         </Toolbar>
+        {
+          loading && <LinearProgress />
+        }
       </AppBar>
       <Drawer
         className={classes.drawer}

@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
 import {
-  PropertyContainer, PropertyModalGrid, PropertyRowContainer, StyledModal,
+  PropertyContainer, PropertyModalGrid, StyledModal,
 } from './PropertyModal.styled';
 
 const useStyles = makeStyles(theme => ({
@@ -119,7 +117,7 @@ const PropertyModal = (props) => {
                       margin="dense"
                       defaultValue={propertyData[field]}
                       onChange={handleChange}
-                      disabled={propertyData[field]}
+                      disabled={!!propertyData[field]}
                       variant="outlined"
                     />
                   )

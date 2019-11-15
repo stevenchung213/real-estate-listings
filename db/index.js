@@ -76,7 +76,8 @@ const PropertySchema = new mongoose.Schema({
   status: { type: String },
   spanish: { type: Boolean },
   lat: { type: Number },
-  long: { type: Number },  agents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  long: { type: Number },
+  agents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
 const NoteSchema = new mongoose.Schema({
