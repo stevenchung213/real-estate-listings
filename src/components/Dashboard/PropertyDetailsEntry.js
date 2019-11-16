@@ -18,7 +18,9 @@ const PropertyDetailsEntry = (props) => {
 
   const statusColors = {
     hotlead: '#afefad',
-    contacted: '#fdc47d',
+    contacted: '#fff8a3',
+    left_note: '#ffa77c',
+    done: '#b5b5b5',
   };
   const useStyles = makeStyles({
     card: {
@@ -44,21 +46,46 @@ const PropertyDetailsEntry = (props) => {
           title={notice_number}
         />
         <CardContent>
-          <Typography gutterBottom variant="subtitle2" component="h6" noWrap>
+          <Typography
+            gutterBottom
+            variant="subtitle2"
+            component="h6"
+            noWrap
+          >
             {property_address}
           </Typography>
           <FlexCaptionContainer>
-            <Typography variant="caption" color="textSecondary" component="p" noWrap>
+            <Typography
+              variant="caption"
+              color="textSecondary"
+              component="p"
+              noWrap
+            >
               {notice_number}
             </Typography>
-            <Typography variant="caption" color="textSecondary" component="p" noWrap>
+            <Typography
+              variant="caption"
+              color="textSecondary"
+              component="p"
+              noWrap
+            >
               {sales_date}
             </Typography>
           </FlexCaptionContainer>
-          <Typography variant="caption" color="textSecondary" component="p" noWrap>
+          <Typography
+            variant="caption"
+            color="textSecondary"
+            component="p"
+            noWrap
+          >
             {owner_name}
           </Typography>
-          <Typography variant="caption" color="textSecondary" component="p" noWrap>
+          <Typography
+            variant="caption"
+            color="textSecondary"
+            component="p"
+            noWrap
+          >
             {trustee_name}
           </Typography>
         </CardContent>

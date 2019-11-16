@@ -12,11 +12,6 @@ export const PropertyContainer = styled.div`
   padding: 15px;
 `;
 
-export const PropertyRowContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
 export const PropertyModalGrid = styled.div`
   display: grid;
   grid-template-columns: ${props => props.gridTemplateColumns || 'repeat(auto-fill, minmax(200px, 1fr))'};
@@ -24,4 +19,11 @@ export const PropertyModalGrid = styled.div`
   margin-bottom: 20px;
   overflow: auto;
   max-height: 90%;
+`;
+
+export const SwitchContainer = styled.div`
+  display: flex;
+  margin: auto;
+  align-items: center;
+  color: darkgrey;
 `;

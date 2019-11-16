@@ -5,7 +5,9 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Switch from '@material-ui/core/Switch';
-import { PreviewContainer, PreviewGrid, StyledModal } from './ImportModal.styled';
+import {
+  PreviewContainer, PreviewGrid, StyledModal, SwitchContainer,
+} from './ImportModal.styled';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -39,8 +41,9 @@ const ImportModal = (props) => {
     // importInputs is an array of objects
     const copy = [...importInputs];
     const objToUpdate = { ...importInputs[i] };
-    if (e.target.name === 'status') {
-      console.log('test test test');
+    if (e.target.name === 'spanish') {
+      objToUpdate[e.target.name] = e.target.checked;
+    } else if (e.target.name === 'status') {
       objToUpdate[e.target.name] = e.target.value;
     } else {
       objToUpdate[e.target.name] = isNaN(e.target.value) ? e.target.value : Number(e.target.value);
@@ -123,13 +126,16 @@ const ImportModal = (props) => {
                     )
                     : entry[0] === 'spanish'
                       ? (
-                        <Switch
-                          key={`value-${entry[0]}`}
-                          checked={entry[1]}
-                          onChange={() => console.log('***spanish toggle on import***')}
-                          color="primary"
-                          value="spanish"
-                        />
+                        <SwitchContainer>
+                          <Switch
+                            key={`value-${entry[0]}`}
+                            checked={importInputs[i].spanish}
+                            onChange={e => handleChange(e, i)}
+                            color="primary"
+                            value="spanish"
+                            name="spanish"
+                          />
+                        </SwitchContainer>
                       )
                       : (
                         <TextField

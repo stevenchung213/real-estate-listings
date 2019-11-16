@@ -23,14 +23,10 @@ const PropertyMap = (props) => {
             const {
               status, lat, long, notice_number, _id,
             } = property;
-            let currentStatus;
-            if (status === 'hotlead') {
-              currentStatus = 'green';
-            } else if (status === 'contacted') {
-              currentStatus = 'orange';
-            } else {
-              currentStatus = 'red';
-            }
+            const currentStatus = status === 'hotlead' ? '#349044'
+            : status === 'contacted' ? '#f97300'
+            : status === 'left_note' ? '#f9b100'
+            : '#808080';
             return (
               <MapPin
                 key={`id-${notice_number}`}

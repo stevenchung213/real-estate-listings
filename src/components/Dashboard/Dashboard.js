@@ -134,7 +134,8 @@ const Dashboard = (props) => {
     console.log('modifying: \n', property);
   };
 
-  const handleFilters = (filterType) => {
+  const handleFilters = (e, filterType) => {
+    e.preventDefault();
     const filters = [
       {
         type: 'View All',
@@ -154,13 +155,12 @@ const Dashboard = (props) => {
       },
     ];
 
-    const filterMap = {
-      hotlead: 'HOT Lead',
-      contact: 'Contact',
-      left_note: 'Left Note',
-      done: 'Done',
-
-    };
+    const filterKeys = [
+      ['HOT Lead', 'hotlead'],
+      ['Contact', 'contact'],
+      ['Left Note', 'left_note'],
+      ['Done', 'done'],
+    ];
   };
 
   const handleSpanishFilter = () => {

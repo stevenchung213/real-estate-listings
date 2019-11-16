@@ -3,8 +3,10 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import {
-  PropertyContainer, PropertyModalGrid, StyledModal,
+  PropertyContainer, PropertyModalGrid, StyledModal, SwitchContainer,
 } from './PropertyModal.styled';
 
 const useStyles = makeStyles(theme => ({
@@ -38,7 +40,7 @@ const PropertyModal = (props) => {
     modalData, openModal, closeModal, handleEditProperty,
   } = props;
   const classes = useStyles();
-  const fields = ['status', 'notice_number', 'notice_date', 'property_address', 'city', 'zip', 'current_phone', 'owner_name', 'owner_address', 'mailing_city', 'mailing_zip', 'estimated_value', 'beneficiary', 'trustee_name', 'trustee_id', 'original_loan_amount', 'open_bid', 'schedule_date', 'time'];
+  const fields = ['status', 'notice_number', 'notice_date', 'property_address', 'city', 'zip', 'current_phone', 'owner_name', 'owner_address', 'mailing_city', 'mailing_zip', 'estimated_value', 'beneficiary', 'trustee_name', 'trustee_id', 'original_loan_amount', 'open_bid', 'schedule_date', 'time', 'spanish'];
   const statuses = ['hotlead', 'contacted', 'left_note', 'done'];
 
   const [propertyData, setPropertyData] = useState(modalData);
@@ -54,18 +56,18 @@ const PropertyModal = (props) => {
     done: 'Done',
   };
 
-  const handleChange = (e) => {
-    e.persist();
-    setPropertyData(currentState => ({
-      ...currentState,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
   const titleCase = str => str.split('_')
     .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
     .join(' ');
 
+  const handleChange = (e) => {
+    e.persist();
+    setPropertyData(currentState => ({
+      ...currentState,
+      [e.target.name]: e.target.name === 'spanish' ? e.target.checked : e.target.value,
+    }));
+  };
+  // submit handler from parent???
   console.log(propertyData);
   return (
     <StyledModal
@@ -80,7 +82,7 @@ const PropertyModal = (props) => {
         <PropertyContainer id="property-edit-container">
           <PropertyModalGrid>
             {
-              fields.map(field => (
+              fields.map((field, i) => (
                 field === 'status'
                   ? (
                     <TextField
@@ -108,19 +110,39 @@ const PropertyModal = (props) => {
                       }
                     </TextField>
                   )
-                  : (
-                    <TextField
-                      key={field}
-                      label={titleCase(field)}
-                      className={classes.textField}
-                      name={field}
-                      margin="dense"
-                      defaultValue={propertyData[field]}
-                      onChange={handleChange}
-                      disabled={!!propertyData[field]}
-                      variant="outlined"
-                    />
-                  )
+                  : field === 'spanish'
+                    ? (
+                      <SwitchContainer key={field}>
+                        <FormControlLabel
+                          label="Spanish"
+                          labelPlacement="start"
+                          control={
+                            (
+                              <Switch
+                                checked={propertyData.spanish}
+                                onChange={handleChange}
+                                color="primary"
+                                value="spanish"
+                                name="spanish"
+                              />
+                            )
+                          }
+                        />
+                      </SwitchContainer>
+                    )
+                    : (
+                      <TextField
+                        key={field}
+                        label={titleCase(field)}
+                        className={classes.textField}
+                        name={field}
+                        margin="dense"
+                        defaultValue={propertyData[field]}
+                        onChange={handleChange}
+                        disabled={!!propertyData[field]}
+                        variant="outlined"
+                      />
+                    )
               ))
             }
           </PropertyModalGrid>

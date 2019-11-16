@@ -11,9 +11,14 @@ export const PreviewContainer = styled.div`
 
 export const PreviewGrid = styled.div`
   display: grid;
-  grid-template-columns: ${props => props.gridTemplateColumns || 'repeat(24, minmax(auto, 1fr))'};
+  grid-template-columns: ${props => props.gridTemplateColumns || 'repeat(23, minmax(200px, 1fr)) 10px'};
   grid-gap: 10px;
   margin-bottom: 20px;
   overflow: auto;
   max-height: 90%;
+`;
+
+export const SwitchContainer = styled.div`
+  display: flex;
+  align-items: center;
 `;
