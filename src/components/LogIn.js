@@ -84,9 +84,11 @@ const LogIn = (props) => {
                   <TextField
                     required
                     id="login-password-input"
+                    type="password"
                     label="password"
                     name="password"
                     onChange={handleChange}
+                    autoComplete="off"
                   />
                 </Grid>
               </Grid>

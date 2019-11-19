@@ -8,11 +8,11 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import {
   Explore, Person, House, Add,
 } from '@material-ui/icons';
 import XLSX from 'xlsx';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import PropertyMap from './Map';
 import PropertyDetails from './PropertyDetails';
 import Admin from './Admin';
@@ -22,7 +22,6 @@ import { DashboardContent, TopbarContainer } from './Dashboard.styled';
 import ImportModal from './ImportModal';
 import PropertyModal from './PropertyModal';
 import FilterToolbar from './FilterToolbar';
-import LinearProgress from "@material-ui/core/LinearProgress";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -55,7 +54,7 @@ const Dashboard = (props) => {
   const { username, token, admin } = user;
   const classes = useStyles();
   const navLinks = admin
-    ? [
+    ? [ // is admin
       {
         name: 'Map',
         view: 'map',
@@ -77,7 +76,7 @@ const Dashboard = (props) => {
         icon: <Person />,
       },
     ]
-    : [
+    : [ // is NOT admin
       {
         name: 'Map',
         view: 'map',
@@ -95,14 +94,22 @@ const Dashboard = (props) => {
       },
     ];
 
+
   const [view, setView] = useState('map');
   const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState(null);
+  const [unfiltered, setUnfiltered] = useState(null);
   const [importModal, setImportModal] = useState(false);
   const [importModalData, setImportModalData] = useState(null);
   const [propertyModal, setPropertyModal] = useState(false);
   const [propertyModalData, setPropertyModalData] = useState(null);
-  const [filter, setFilter] = useState(false);
+  const statusFilters = ['By Status', 'HOT Lead', 'Contacted', 'Left Note', 'Done'];
+  const dateFilters = ['By Date', '< 7 Days', '< 30 Days'];
+  const [filters, setFilters] = useState({
+    filtersOn: false,
+    status: statusFilters[0],
+    date: dateFilters[0],
+  });
   const [spanish, setSpanish] = useState(false);
 
   const changeView = (view) => {
@@ -134,38 +141,80 @@ const Dashboard = (props) => {
     console.log('modifying: \n', property);
   };
 
-  const handleFilters = (e, filterType) => {
-    e.preventDefault();
-    const filters = [
-      {
-        type: 'View All',
-        values: null,
-      },
-      {
-        type: 'By Status',
-        values: ['HOT Lead', 'Contacted', 'Left Note', 'Done'],
-      },
-      {
-        type: 'Date',
-        values: ['Last 30 Days', 'Last 7 Days'],
-      },
-      {
-        type: 'Spanish',
-        values: null,
-      },
-    ];
+  const handleFilters = () => {
+    const standardizeStatus = str => (
+      str === 'HOT Lead' ? 'hotlead'
+        : str === 'Contacted' ? 'contacted'
+          : str === 'Left Note' ? 'left_note'
+            : str === 'Done' ? 'done'
+              : undefined
+    );
+    const standardizeDate = str => (
+      str === '< 7 Days' ? 7
+        : str === '< 30 Days' ? 30
+          : undefined
+    );
+    const { filtersOn, status, date } = filters;
+    console.log('filter toggled');
 
-    const filterKeys = [
-      ['HOT Lead', 'hotlead'],
-      ['Contact', 'contact'],
-      ['Left Note', 'left_note'],
-      ['Done', 'done'],
-    ];
+    const currentStatusFilter = standardizeStatus(status);
+    const targetDateDifference = standardizeDate(date);
+    console.log(currentStatusFilter);
+    console.log(targetDateDifference);
+    console.log(unfiltered);
+    let filteredListings = [...unfiltered];
+    if (filtersOn) {
+      if (currentStatusFilter) {
+        console.log(1);
+        filteredListings = filteredListings.filter(listing => listing.status === currentStatusFilter);
+      }
+      if (targetDateDifference) {
+        filteredListings = filteredListings.filter((listing) => {
+          const today = new Date();
+          const targetFilterWeek = new Date(listing.notice_date);
+          const diffTime = Math.abs(today - targetFilterWeek);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          const targetDifference = Number(date.split(' ')[1]);
+          return diffDays <= targetDifference;
+        });
+      }
+    }
+    if (spanish) {
+      console.log(3);
+      filteredListings = filteredListings.filter(listing => listing.spanish);
+    }
+    setListings(filteredListings);
   };
 
-  const handleSpanishFilter = () => {
-    const copy = [...listings];
+  const handleViewAll = () => {
+    setFilters({
+      filtersOn: false,
+      status: statusFilters[0],
+      date: dateFilters[0],
+    });
+    setListings([...unfiltered]);
+  };
 
+  const handleByStatus = () => {
+    const { status } = filters;
+    const nextType = statusFilters[statusFilters.indexOf(status) + 1] || statusFilters[0];
+    const resetOrderBool = nextType !== statusFilters[0];
+    setFilters(prevState => ({
+      ...prevState,
+      filtersOn: resetOrderBool,
+      status: nextType,
+    }));
+  };
+
+  const handleByDate = () => {
+    const { date } = filters;
+    const nextType = dateFilters[dateFilters.indexOf(date) + 1] || dateFilters[0];
+    const resetOrderBool = nextType !== dateFilters[0];
+    setFilters(prevState => ({
+      ...prevState,
+      filtersOn: resetOrderBool,
+      date: nextType,
+    }));
   };
 
   const handleImportModal = (data) => {
@@ -214,6 +263,7 @@ const Dashboard = (props) => {
       const jsonSheet = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: false });
       // separate fields and values
       const filtered = jsonSheet.filter(row => row[0]);
+      // add spanish into array of fields
       const fields = [...filtered[0], 'spanish'];
       const values = filtered.slice(1);
       console.log('Import.values\n', values, '\n', fields);
@@ -241,7 +291,7 @@ const Dashboard = (props) => {
         formattedData.push(rowObj);
       }
       // add spanish
-      console.log(formattedData)
+      console.log(formattedData);
       // geocode address to lat & long
       const getGeoLocations = async arr => arr.map(listing => geocode(listing.property_address, listing.city, listing.zip));
       const test = await getGeoLocations(formattedData);
@@ -287,6 +337,7 @@ const Dashboard = (props) => {
       .then(res => res.json())
       .then((json) => {
         setListings(json.success);
+        setUnfiltered(json.success);
         console.log(json);
       })
       .catch((err) => {
@@ -333,26 +384,31 @@ const Dashboard = (props) => {
         setErrorModal(true);
       });
   };
-
+  // fetch listings on mount
   useEffect(() => {
     fetchListings();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
+  // filter watcher
   useEffect(() => {
-
-  }, []);
+    if (unfiltered) {
+      handleFilters();
+    }
+  }, [filters.filtersOn, filters.status, filters.date, spanish, unfiltered]);
 
   const toolbarContent = view === 'map' || view === 'properties'
     ? (
       <FilterToolbar
+        activeFilters={filters}
         spanish={spanish}
         handleSpanish={handleSpanish}
-        handleFilters={handleFilters}
+        handleByStatus={handleByStatus}
+        handleByDate={handleByDate}
+        handleViewAll={handleViewAll}
       />
     )
     : null;
 
-  console.log(listings)
+  console.log(listings);
 
   return (
     <FullContainer
@@ -459,5 +515,4 @@ const Dashboard = (props) => {
     </FullContainer>
   );
 };
-
 export default Dashboard;

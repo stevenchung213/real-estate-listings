@@ -138,8 +138,8 @@ const PropertyModal = (props) => {
                         name={field}
                         margin="dense"
                         defaultValue={propertyData[field]}
+                        value={propertyData[field]}
                         onChange={handleChange}
-                        disabled={!!propertyData[field]}
                         variant="outlined"
                       />
                     )
