@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { withRouter } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -13,14 +14,14 @@ import {
 } from '@material-ui/icons';
 import XLSX from 'xlsx';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import PropertyMap from './Map';
-import PropertyDetails from './PropertyDetails';
-import Admin from './Admin';
-import Import from './Import';
+import PropertyMap from './Map/Map';
+import PropertyDetails from './PropertyDetails/PropertyDetails';
+import Admin from './Admin/Admin';
+import Import from './Import/Import';
 import { FullContainer } from '../styles';
 import { DashboardContent, TopbarContainer } from './Dashboard.styled';
-import ImportModal from './ImportModal';
-import PropertyModal from './PropertyModal';
+import ImportModal from './Import/ImportModal';
+import PropertyModal from './PropertyDetails/PropertyModal';
 import FilterToolbar from './FilterToolbar';
 
 const useStyles = makeStyles(theme => ({
@@ -87,11 +88,6 @@ const Dashboard = (props) => {
         view: 'properties',
         icon: <House />,
       },
-      {
-        name: 'Import',
-        view: 'import',
-        icon: <Add />,
-      },
     ];
 
 
@@ -116,13 +112,6 @@ const Dashboard = (props) => {
     setView(view);
   };
 
-  const formatUsername = (name) => {
-    const splitName = name.split('.');
-    const firstName = splitName[0].charAt(0).toUpperCase() + splitName[0].slice(1);
-    const lastName = splitName[1].charAt(0).toUpperCase() + splitName[1].slice(1);
-    return `${firstName} ${lastName}`;
-  };
-
   const handleSpanish = (bool) => {
     setSpanish(bool);
   };
@@ -137,22 +126,18 @@ const Dashboard = (props) => {
     }
   };
 
-  const handleEditProperty = (property) => {
-    console.log('modifying: \n', property);
-  };
-
   const handleFilters = () => {
     const standardizeStatus = str => (
       str === 'HOT Lead' ? 'hotlead'
         : str === 'Contacted' ? 'contacted'
-          : str === 'Left Note' ? 'left_note'
-            : str === 'Done' ? 'done'
-              : undefined
+        : str === 'Left Note' ? 'left_note'
+          : str === 'Done' ? 'done'
+            : null
     );
     const standardizeDate = str => (
       str === '< 7 Days' ? 7
         : str === '< 30 Days' ? 30
-          : undefined
+        : null
     );
     const { filtersOn, status, date } = filters;
     console.log('filter toggled');
@@ -244,6 +229,31 @@ const Dashboard = (props) => {
     return fetch(url).then(res => res.json());
   };
 
+  const fetchListings = () => {
+    const url = `${api}/listings`;
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => res.json())
+      .then((json) => {
+        setListings(json.payload);
+        setUnfiltered(json.payload);
+        console.log(json);
+      })
+      .catch((err) => {
+        console.error(err.message);
+        setErrors({
+          type: err.message,
+          message: 'An error occurred while fetching properties.',
+        });
+        setErrorModal(true);
+      });
+  };
+
   const handlePreview = (files, e) => {
     e.preventDefault();
     // convert xls to json then display as key/value pairs
@@ -325,31 +335,6 @@ const Dashboard = (props) => {
     }
   };
 
-  const fetchListings = () => {
-    const url = `${api}/listings`;
-    fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then((json) => {
-        setListings(json.success);
-        setUnfiltered(json.success);
-        console.log(json);
-      })
-      .catch((err) => {
-        console.error(err.message);
-        setErrors({
-          type: err.message,
-          message: 'An error occurred while fetching properties.',
-        });
-        setErrorModal(true);
-      });
-  };
-
   const handleImport = (data) => {
     const url = `${api}/listings`;
     fetch(url, {
@@ -384,6 +369,39 @@ const Dashboard = (props) => {
         setErrorModal(true);
       });
   };
+
+  const handleEditProperty = (propertyID, propertyData) => {
+    console.log('modifying: \n', propertyID, propertyData);
+    const url = `${api}/listings/${propertyID}`;
+    fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(propertyData),
+    })
+      .then(res => res.json())
+      .then((res) => {
+        console.log(res);
+        setErrors({
+          type: 'Success',
+          message: 'Property has been updated successfully!',
+        });
+        setErrorModal(true);
+        handlePropertyModal();
+        fetchListings();
+      })
+      .catch((err) => {
+        console.error(err.message);
+        setErrors({
+          type: err.message,
+          message: 'An error occurred while trying to update a property.',
+        });
+        setErrorModal(true);
+      });
+  };
+
   // fetch listings on mount
   useEffect(() => {
     fetchListings();
@@ -424,7 +442,7 @@ const Dashboard = (props) => {
         <Toolbar variant="dense">
           <TopbarContainer>
             <Typography variant="h5" noWrap>
-              {`${formatUsername(username)}`}
+              West USA Realty
             </Typography>
             {
               toolbarContent
@@ -489,7 +507,13 @@ const Dashboard = (props) => {
         }
         {
           view === 'admin'
-          && <Admin />
+          && (
+            <Admin
+              setErrors={setErrors}
+              setErrorModal={setErrorModal}
+              user={user}
+            />
+          )
         }
       </DashboardContent>
       {
@@ -515,4 +539,4 @@ const Dashboard = (props) => {
     </FullContainer>
   );
 };
-export default Dashboard;
+export default withRouter(Dashboard);

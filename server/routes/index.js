@@ -1,37 +1,14 @@
 require('dotenv').config();
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const { Users, Properties, Notes } = require('../../db');
+const checkToken = require('../middleware');
+const { Properties, Users } = require('../../db');
 
 const router = express.Router();
-const key = process.env.JWT_KEY;
-
-// token verification middleware
-const checkToken = (req, res, next) => {
-  console.log('check token middleware\n', req.headers);
-  const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
-  console.log(token);
-  if (!token) {
-    res.status(401).json({ message: 'Unauthorized: Invalid token' });
-  } else {
-    jwt.verify(token, key, (err) => {
-      if (err) {
-        console.error('cccccccccccccccccccccc\n', err);
-        res.status(401).json({ message: 'Unauthorized: Invalid token' });
-      } else {
-        next();
-      }
-    });
-  }
-};
-
-router.use((req, res, next) => {
-  console.log(`incoming ${req.method} request at ${req.originalUrl}`);
-  next();
-});
+const key = process.env.JWT_KEY || '123456';
 
 router.post('/register', (req, res) => {
-  console.log(`post request from ${req.originalUrl}\n at ${req.url}`, req.body);
+  console.log(`body: ${req.body}\nparams: ${req.params}`)
   const { username, password, admin } = req.body;
   // check if user exists in database
   Users.find({ username }).exec()
@@ -41,7 +18,7 @@ router.post('/register', (req, res) => {
         // create new user document
         const newUser = new Users({ username, password, admin });
         newUser.save()
-          .then(() => res.status(200).json({ success: 'registration', username }))
+          .then(() => res.status(200).json({ payload: 'registration', username }))
           .catch(err => console.error(`error: saving new user\n${err}`));
       } else {
         // if user EXISTS
@@ -60,7 +37,7 @@ router.post('/register', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-  console.log(`post request from ${req.originalUrl} at ${req.url}\n`, req.body);
+  console.log(`body: ${req.body}\nparams: ${req.params}`)
   const { username, password } = req.body;
   Users.findOne({ username }).exec()
     .then((user) => {
@@ -95,67 +72,76 @@ router.post('/login', (req, res) => {
 });
 
 router.post('/listings', checkToken, (req, res) => {
-  console.log(`post request at ${req.originalUrl}\n`, req.body);
+  console.log(`body: ${req.body}\nparams: ${req.params}`)
   // save Properties document to db
   const documentsArr = req.body;
   Properties.insertMany(documentsArr, (err, docs) => {
     if (err) {
       console.error(`error: while inserting documents at ${req.originalUrl}\n`, err);
       res.status(500).json({
-        message: `An error occurred while inserting documents at ${req.originalUrl}`,
+        message: `An error occurred while saving listings at ${req.originalUrl}`,
         error: err,
       });
     } else {
       res.status(200).json({
-        success: docs,
+        payload: docs,
       });
     }
   });
 });
 
 router.get('/listings', checkToken, (req, res) => {
-  console.log(`get request at ${req.originalUrl}\n`, req.body);
+  console.log(`body: ${req.body}\nparams: ${req.params}`)
   Properties.find({}).exec()
     .then((docs) => {
       res.status(200).json({
-        success: docs,
+        payload: docs,
       });
     })
     .catch((err) => {
-      console.error(`error: while finding documents at ${req.originalUrl}\n`, err);
+      console.error(`error: while fetching documents at ${req.originalUrl}\n`, err);
       res.status(500).json({
-        message: `An error occurred while fetching documents at ${req.originalUrl}`,
+        message: `An error occurred while fetching listings at ${req.originalUrl}`,
         error: err,
       });
     });
 });
 
-router.patch('/listings', checkToken, (req, res) => {
-  console.log(req)
+router.patch('/listings/:id', checkToken, (req, res) => {
+  console.log(`body: ${req.body}\nparams: ${req.params}`)
+  const propertyID = req.params.id;
+  const propertyData = req.body;
+  Properties.update({ _id: propertyID }, { $set: propertyData }).exec()
+    .then((result) => {
+      console.log(result);
+      res.status(200).json({
+        payload: result,
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({
+        message: `An error occurred while updating a listing at ${req.originalUrl}`,
+        error: err,
+      });
+    });
 });
 
-// router.get('/data', checkToken, (req, res) => {
-//   console.log(req.headers, '\n')
-//   jwt.verify(req.token, key, (err, authorizedData) => {
-//     if (err) {
-//       console.log(`error: could not verify at protected route /data\n`, err);
-//       res.status(403).json({ message: `Token might have expired`, error: err });
-//     } else {
-//       console.log('authorized data\n', authorizedData)
-//       const { userID } = authorizedData;
-//       User.findOne({ _id: userID }).exec()
-//         .then(doc => {
-//           const { _id, username } = doc;
-//           const userData = {
-//             userID: _id,
-//             username,
-//           };
-//           res.status(200).json(userData)
-//         })
-//         .catch(err => console.log(`error: database query\n`, err));
-//       // res.status(200).json({ message: `Successful verification at route /data`, data: authorizedData });
-//     }
-//   });
-// });
+router.get('/users', checkToken, (req, res) => {
+  console.log(`body: ${req.body}\nparams: ${req.params}`)
+  Users.find({}).exec()
+    .then((docs) => {
+      res.status(200).json({
+        payload: docs,
+      });
+    })
+    .catch((err) => {
+      console.error(`error: while fetching users at ${req.originalUrl}\n`, err);
+      res.status(500).json({
+        message: `An error occurred while fetching users at ${req.originalUrl}`,
+        error: err,
+      });
+    });
+});
 
 module.exports = router;

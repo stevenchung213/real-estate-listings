@@ -6,7 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import {
-  PropertyContainer, PropertyModalGrid, StyledModal, SwitchContainer,
+  PropertyContainer, PropertyModalGrid, StyledModal, SwitchContainer
 } from './PropertyModal.styled';
 
 const useStyles = makeStyles(theme => ({
@@ -45,7 +45,7 @@ const PropertyModal = (props) => {
 
   const [propertyData, setPropertyData] = useState(modalData);
   const {
-    agents, beneficiary, city, current_phone, estimated_value, mailing_city, mailing_zip, notice_date, notice_number, open_bid, original_loan_amount, owner_address, owner_name, property_address, sales_date, schedule_date, status, trustee_id, trustee_name, zip, _id,
+    agents, beneficiary, city, current_phone, estimated_value, mailing_city, mailing_zip, notice_date, notice_number, open_bid, original_loan_amount, owner_address, owner_name, property_address, sales_date, schedule_date, spanish, status, trustee_id, trustee_name, zip, _id,
   } = propertyData;
 
   const admin = true;
@@ -82,7 +82,7 @@ const PropertyModal = (props) => {
         <PropertyContainer id="property-edit-container">
           <PropertyModalGrid>
             {
-              fields.map((field, i) => (
+              fields.map(field => (
                 field === 'status'
                   ? (
                     <TextField
@@ -119,7 +119,7 @@ const PropertyModal = (props) => {
                           control={
                             (
                               <Switch
-                                checked={propertyData.spanish}
+                                checked={propertyData[field]}
                                 onChange={handleChange}
                                 color="primary"
                                 value="spanish"
@@ -152,7 +152,7 @@ const PropertyModal = (props) => {
               color="primary"
               type="submit"
               fullWidth
-              onClick={() => handleEditProperty('test')}
+              onClick={() => handleEditProperty(`${_id}`, propertyData)}
             >
               submit
             </Button>

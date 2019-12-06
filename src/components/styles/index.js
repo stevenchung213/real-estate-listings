@@ -11,6 +11,15 @@ export const FullContainer = styled.div`
   padding: ${props => props.padding || 0};
 `;
 
+export const FlexContainer = styled.div`
+  display: flex;
+  flex-direction: ${props => props.flexDirection || 'row'};
+  width: ${props => props.width || 'auto'};
+  height: ${props => props.height || 'auto'};
+  margin: ${props => props.margin || 0};
+  padding: ${props => props.padding || 0};
+`;
+
 export const ColumnFlexBox = styled.div`
   width: auto;
   height: auto;

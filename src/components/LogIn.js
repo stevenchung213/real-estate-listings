@@ -43,8 +43,7 @@ const LogIn = (props) => {
   return (
     <FullContainer id="signup-container">
       <ColumnFlexBox id="signup-input-container">
-        <CenteredHeader2>Property Listings</CenteredHeader2>
-        <CenteredHeader1>Agent Portal</CenteredHeader1>
+        <CenteredHeader1>West USA Realty</CenteredHeader1>
         <form onSubmit={(e) => {
           e.preventDefault();
           authUser(userinfo);
@@ -102,17 +101,17 @@ const LogIn = (props) => {
               log in
               <Home className={classes.rightIcon} />
             </Button>
-            <br />
-            <br />
-            <Button
-              variant="contained"
-              color="primary"
-              component={Link}
-              to="/signup"
-            >
-              register
-              <PersonAdd className={classes.rightIcon} />
-            </Button>
+            {/*<br />*/}
+            {/*<br />*/}
+            {/*<Button*/}
+            {/*  variant="contained"*/}
+            {/*  color="primary"*/}
+            {/*  component={Link}*/}
+            {/*  to="/signup"*/}
+            {/*>*/}
+            {/*  register*/}
+            {/*  <PersonAdd className={classes.rightIcon} />*/}
+            {/*</Button>*/}
           </FormControl>
         </form>
       </ColumnFlexBox>

@@ -1,6 +1,6 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import { FlexContainer } from './Dashboard.styled';
+import { FlexContainer } from '../Dashboard.styled';
 import PropertyDetailsEntry from './PropertyDetailsEntry';
 import { PropertiesGrid } from './PropertyDetails.styled';
 

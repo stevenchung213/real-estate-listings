@@ -8,7 +8,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { FlexCaptionContainer } from './PropertyDetailsEntry.styled';
-import HomeImage from '../../assets/home.png';
+import HomeImage from '../../../assets/home.png';
 
 const PropertyDetailsEntry = (props) => {
   const { listing, handleCardClick } = props;

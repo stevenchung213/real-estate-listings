@@ -222,10 +222,11 @@ const SignUp = (props) => {
                       <TextField
                         id="password-username-input"
                         label="admin password"
+                        type="password"
                         className={classes.textField}
                         name="adminPassword"
                         onChange={handleChange}
-                        helperText="not required"
+                        helperText="password required only when creating an admin user"
                       />
                     </Grid>
                   </Grid>
@@ -238,7 +239,7 @@ const SignUp = (props) => {
                   fullWidth
                   disabled={userinfo.submitting}
                 >
-                  sign up
+                  create
                   <Done className={classes.rightIcon} />
                 </Button>
               </form>

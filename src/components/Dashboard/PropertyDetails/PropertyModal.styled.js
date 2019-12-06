@@ -25,5 +25,5 @@ export const SwitchContainer = styled.div`
   display: flex;
   margin: auto;
   align-items: center;
-  color: darkgrey;
+  color: #555555;
 `;

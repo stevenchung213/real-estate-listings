@@ -74,9 +74,9 @@ const PropertySchema = new mongoose.Schema({
   mailing_city: { type: String },
   mailing_zip: { type: Number },
   status: { type: String },
-  spanish: { type: Boolean },
   lat: { type: Number },
   long: { type: Number },
+  spanish: { type: Boolean },
   agents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
