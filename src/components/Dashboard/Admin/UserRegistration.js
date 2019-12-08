@@ -74,7 +74,8 @@ const UserRegistration = (props) => {
     if (!lowerCasedLetters.test(firstName) || !lowerCasedLetters.test(lastName) || (middleName && !lowerCasedLetters.test(middleName))) {
       setErrors({
         type: 'Invalid Username',
-        message: 'Please use the " firtname.lastname " naming convention with ALL LOWER-CASED letters combined with a \' . \'\n\nExample:\njane.smith',
+        message: 'Please use the " firstname.lastname " naming convention with ALL LOWER-CASED letters combined with a \' .' +
+          ' \'\n\nExample:\njane.smith',
       });
       setErrorModal(true);
       return;
