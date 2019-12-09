@@ -2,7 +2,7 @@ import React from 'react';
 import { useDropzone } from 'react-dropzone';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { FlexContainer } from '../Dashboard.styled';
+import { FlexContainer } from '../../styles/';
 import { DropzoneContainer } from './Import.styled';
 
 const Import = (props) => {
@@ -12,6 +12,7 @@ const Import = (props) => {
   return (
     <FlexContainer
       id="import-container"
+      flexDirection="column"
       padding="30px 0"
     >
       <DropzoneContainer
@@ -27,6 +28,7 @@ const Import = (props) => {
 
       <FlexContainer
         id="imported-files-container"
+        flexDirection="column"
         margin="40px 40px"
       >
         <Typography>
@@ -45,6 +47,7 @@ const Import = (props) => {
       </FlexContainer>
 
       <FlexContainer
+        flexDirection="column"
         margin="auto"
       >
         <Button

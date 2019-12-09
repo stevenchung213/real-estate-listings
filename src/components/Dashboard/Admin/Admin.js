@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import UserRegistration from './UserRegistration';
-import { FlexContainer } from "../../styles";
+import { FlexContainer } from '../../styles';
+import Users from './Users';
 
 const Admin = (props) => {
   const api = process.env.API || 'http://localhost:3000/api/v1';
@@ -45,15 +46,11 @@ const Admin = (props) => {
       height="100%"
       padding="20px"
     >
-      <div id="users-list-container"
-      style={{width:'50%'}}>
-        {/*
-          map thru users array and display a card per
-        */}
-      </div>
+      <Users />
       <UserRegistration
         setErrors={setErrors}
         setErrorModal={setErrorModal}
+        fetchUsers={fetchUsers}
       />
     </FlexContainer>
   );

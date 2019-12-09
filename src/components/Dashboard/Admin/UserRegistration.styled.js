@@ -6,3 +6,7 @@ export const SwitchContainer = styled.div`
   display: flex;
   justify-content: center;
 `;
+
+export const InputContainer = styled.form`
+  margin: auto;
+`;

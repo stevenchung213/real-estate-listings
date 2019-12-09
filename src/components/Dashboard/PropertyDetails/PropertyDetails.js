@@ -1,6 +1,6 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import { FlexContainer } from '../Dashboard.styled';
+import { FlexContainer } from '../../styles/';
 import PropertyDetailsEntry from './PropertyDetailsEntry';
 import { PropertiesGrid } from './PropertyDetails.styled';
 
@@ -9,6 +9,7 @@ const PropertyDetails = (props) => {
   return (
     <FlexContainer
       id="property-details-container"
+      flexDirection="column"
       padding="10px"
     >
       {

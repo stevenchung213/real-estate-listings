@@ -8,7 +8,7 @@ const router = express.Router();
 const key = process.env.JWT_KEY || '123456';
 
 router.post('/register', (req, res) => {
-  console.log(`body: ${req.body}\nparams: ${req.params}`)
+  console.log(`body: ${JSON.stringify(req.body)}`)
   const { username, password, admin } = req.body;
   // check if user exists in database
   Users.find({ username }).exec()
@@ -37,7 +37,7 @@ router.post('/register', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-  console.log(`body: ${req.body}\nparams: ${req.params}`)
+  console.log(`body: ${req.body}`)
   const { username, password } = req.body;
   Users.findOne({ username }).exec()
     .then((user) => {

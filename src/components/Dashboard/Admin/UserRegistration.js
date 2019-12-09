@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { FlexContainer, CenteredHeader2 } from '../../styles';
-import { SwitchContainer } from './UserRegistration.styled';
+import { InputContainer, SwitchContainer } from './UserRegistration.styled';
 
 const styles = theme => ({
   icon: {
@@ -30,7 +30,7 @@ const styles = theme => ({
 });
 
 const UserRegistration = (props) => {
-  const { classes, setErrors, setErrorModal } = props;
+  const { classes, setErrors, setErrorModal, fetchUsers } = props;
   const api = process.env.API || 'http://localhost:3000/api/v1';
 
   const [userInfo, setUserInfo] = useState({
@@ -52,7 +52,7 @@ const UserRegistration = (props) => {
   const submit = (e) => {
     e.preventDefault();
     console.log('init\n', userInfo);
-    const { username, password } = userInfo;
+    const { username, password, admin } = userInfo;
     // form validation
     // requires '.' between first and last name
     if (!username.includes('.')) {
@@ -97,7 +97,7 @@ const UserRegistration = (props) => {
     }));
 
     const url = `${api}/register`;
-    const user = { username, password };
+    const user = { username, password, admin };
 
     fetch(url, {
       method: 'POST',
@@ -130,6 +130,7 @@ const UserRegistration = (props) => {
           type: 'Account Created',
           message: 'Account created!  Click out of this box to go to log in screen.',
         });
+        fetchUsers();
         setErrorModal(true);
         setUserInfo(currentState => ({
           ...currentState,
@@ -145,14 +146,12 @@ const UserRegistration = (props) => {
     <FlexContainer
       id="user-registration-container"
       flexDirection="column"
+      width="40%"
+      height="100%"
     >
       <CenteredHeader2>User Registration</CenteredHeader2>
-      <FlexContainer
-        id="signup-input-container"
-        width="100%"
-        height="100%"
-      >
-        <form onSubmit={submit}>
+      <FlexContainer id="signup-input-container">
+        <InputContainer onSubmit={submit}>
           <div className={classes.margin}>
             <Grid
               container
@@ -243,7 +242,7 @@ const UserRegistration = (props) => {
             create user
             <PersonAdd className={classes.rightIcon} />
           </Button>
-        </form>
+        </InputContainer>
       </FlexContainer>
     </FlexContainer>
   );

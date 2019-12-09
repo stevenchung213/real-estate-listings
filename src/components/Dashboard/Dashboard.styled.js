@@ -18,11 +18,11 @@ export const TopbarContainer = styled.div`
 
 
 /* SHARED STYLES */
-export const FlexContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin: ${props => props.margin || 0};
-  width: auto;
-  height: auto;
-  padding: ${props => props.padding || 0};
-`;
+// export const FlexContainer = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   margin: ${props => props.margin || 0};
+//   width: auto;
+//   height: auto;
+//   padding: ${props => props.padding || 0};
+// `;

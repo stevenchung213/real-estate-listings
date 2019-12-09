@@ -5,7 +5,6 @@ import { Route, Redirect } from 'react-router-dom';
 const ProtectedRoute = ({
   component: Component, loggedIn, setErrors, setErrorModal, ...rest
 }) => {
-  console.log(loggedIn);
   if (loggedIn) {
     return (
       <Route
@@ -14,11 +13,6 @@ const ProtectedRoute = ({
       />
     );
   }
-  // setErrors({
-  //   type: '403 Forbidden Access',
-  //   message: `Please log in`
-  // });
-  // setModal(true);
   return (
     <Route
       {...rest}

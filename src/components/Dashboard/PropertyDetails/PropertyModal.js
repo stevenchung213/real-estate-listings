@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
 
 const PropertyModal = (props) => {
   const {
-    modalData, openModal, closeModal, handleEditProperty,
+    admin, modalData, openModal, closeModal, handleEditProperty,
   } = props;
   const classes = useStyles();
   const fields = ['status', 'notice_number', 'notice_date', 'property_address', 'city', 'zip', 'current_phone', 'owner_name', 'owner_address', 'mailing_city', 'mailing_zip', 'estimated_value', 'beneficiary', 'trustee_name', 'trustee_id', 'original_loan_amount', 'open_bid', 'schedule_date', 'time', 'spanish'];
@@ -48,7 +48,6 @@ const PropertyModal = (props) => {
     agents, beneficiary, city, current_phone, estimated_value, mailing_city, mailing_zip, notice_date, notice_number, open_bid, original_loan_amount, owner_address, owner_name, property_address, sales_date, schedule_date, spanish, status, trustee_id, trustee_name, zip, _id,
   } = propertyData;
 
-  const admin = true;
   const formattedStatus = {
     hotlead: 'HOT Lead',
     contacted: 'Contacted',
@@ -100,6 +99,7 @@ const PropertyModal = (props) => {
                       }}
                       margin="dense"
                       variant="outlined"
+                      disabled={!admin}
                     >
                       {
                         statuses.map(option => (
@@ -124,6 +124,7 @@ const PropertyModal = (props) => {
                                 color="primary"
                                 value="spanish"
                                 name="spanish"
+                                disabled={!admin}
                               />
                             )
                           }
@@ -141,6 +142,7 @@ const PropertyModal = (props) => {
                         value={propertyData[field]}
                         onChange={handleChange}
                         variant="outlined"
+                        disabled={!admin}
                       />
                     )
               ))

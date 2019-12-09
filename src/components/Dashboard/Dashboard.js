@@ -306,6 +306,7 @@ const Dashboard = (props) => {
       const getGeoLocations = async arr => arr.map(listing => geocode(listing.property_address, listing.city, listing.zip));
       const test = await getGeoLocations(formattedData);
 
+      // geocode all addresses
       Promise.all(test).then((json) => {
         for (let j = 0; j < json.length; j++) {
           const { lat, lng } = json[j].results[0].geometry.location;
@@ -322,7 +323,7 @@ const Dashboard = (props) => {
           setLoading(false);
           setErrors({
             type: err.message,
-            message: 'An error occurred while retrieving geo-locations.',
+            message: 'An error occurred while geo-coding addresses.',
           });
           setErrorModal(true);
         });
@@ -529,6 +530,7 @@ const Dashboard = (props) => {
       {
         propertyModal && (
           <PropertyModal
+            admin={admin}
             openModal={propertyModal}
             closeModal={handlePropertyModal}
             modalData={propertyModalData}
