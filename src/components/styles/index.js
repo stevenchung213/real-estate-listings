@@ -20,14 +20,6 @@ export const FlexContainer = styled.div`
   padding: ${props => props.padding || 0};
 `;
 
-export const ColumnFlexBox = styled.div`
-  width: auto;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  margin: auto;
-`;
-
 export const CenteredHeader1 = styled.h1`
   text-align: center;
 `;

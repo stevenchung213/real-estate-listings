@@ -15,14 +15,3 @@ export const TopbarContainer = styled.div`
   width: 100%;
   height: 100%;
 `;
-
-
-/* SHARED STYLES */
-// export const FlexContainer = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   margin: ${props => props.margin || 0};
-//   width: auto;
-//   height: auto;
-//   padding: ${props => props.padding || 0};
-// `;

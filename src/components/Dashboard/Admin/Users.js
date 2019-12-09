@@ -1,21 +1,28 @@
 import React from 'react';
-import { FlexContainer } from "../../styles";
+import List from '@material-ui/core/List';
+import User from './User';
+import { FlexContainer } from '../../styles';
 
 const Users = (props) => {
-
+  const { users, setUserToRemove, setModal } = props;
   return (
     <FlexContainer
       id="users-list-container"
-      width="60%"
+      width="62%"
       height="100%"
     >
-      {
-        [1,2,3,4,5,6,7,8,9,10].map(x => (
-          <div>
-            {`user #${x}`}
-          </div>
-        ))
-      }
+      <List dense>
+        {
+          users && users.map(x => (
+            <User
+              key={x.username}
+              user={x}
+              setUserToRemove={setUserToRemove}
+              setModal={setModal}
+            />
+          ))
+        }
+      </List>
     </FlexContainer>
   );
 };

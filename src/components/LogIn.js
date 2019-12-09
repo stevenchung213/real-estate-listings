@@ -10,7 +10,7 @@ import Home from '@material-ui/icons/Home';
 import PersonAdd from '@material-ui/icons/PersonAdd';
 import { Link } from 'react-router-dom';
 import {
-  CenteredHeader1, CenteredHeader2, ColumnFlexBox, FullContainer,
+  CenteredHeader1, CenteredHeader2, FlexContainer, FullContainer,
 } from './styles';
 
 const styles = theme => ({
@@ -42,7 +42,11 @@ const LogIn = (props) => {
 
   return (
     <FullContainer id="signup-container">
-      <ColumnFlexBox id="signup-input-container">
+      <FlexContainer
+        id="signup-input-container"
+        flexDirection="column"
+        margin="auto"
+      >
         <CenteredHeader1>West USA Realty</CenteredHeader1>
         <form onSubmit={(e) => {
           e.preventDefault();
@@ -114,7 +118,7 @@ const LogIn = (props) => {
             {/*</Button>*/}
           </FormControl>
         </form>
-      </ColumnFlexBox>
+      </FlexContainer>
     </FullContainer>
   );
 };

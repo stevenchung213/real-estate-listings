@@ -12,6 +12,11 @@ import ProtectedRoute from './ProtectedRoute';
 const Main = (props) => {
   const api = process.env.API || 'http://localhost:3000/api/v1';
 
+  const [errorModal, setErrorModal] = useState(false);
+  const [errors, setErrors] = useState({
+    type: '',
+    message: '',
+  });
   const [userInfo, setUserInfo] = useState({
     userId: '',
     username: '',
@@ -19,13 +24,6 @@ const Main = (props) => {
     loggedIn: false,
     token: '',
     admin: false,
-  });
-
-  const [errorModal, setErrorModal] = useState(false);
-
-  const [errors, setErrors] = useState({
-    type: '',
-    message: '',
   });
 
   const authUser = (userObj) => {

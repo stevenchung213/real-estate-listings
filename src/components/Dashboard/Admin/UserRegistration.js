@@ -30,7 +30,9 @@ const styles = theme => ({
 });
 
 const UserRegistration = (props) => {
-  const { classes, setErrors, setErrorModal, fetchUsers } = props;
+  const {
+    classes, setErrors, setErrorModal, fetchUsers,
+  } = props;
   const api = process.env.API || 'http://localhost:3000/api/v1';
 
   const [userInfo, setUserInfo] = useState({
@@ -58,8 +60,8 @@ const UserRegistration = (props) => {
     if (!username.includes('.')) {
       setErrors({
         type: 'Invalid Username',
-        message: 'Please use the " firstname.lastname " naming convention with ALL LOWER-CASED letters combined with a " .' +
-          ' "\n\nExample:\njane.smith',
+        message: 'Please use the " firstname.lastname " naming convention with ALL LOWER-CASED letters combined with a " .'
+          + ' "\n\nExample:\njane.smith',
       });
       setErrorModal(true);
       return;
@@ -74,8 +76,8 @@ const UserRegistration = (props) => {
     if (!lowerCasedLetters.test(firstName) || !lowerCasedLetters.test(lastName) || (middleName && !lowerCasedLetters.test(middleName))) {
       setErrors({
         type: 'Invalid Username',
-        message: 'Please use the " firstname.lastname " naming convention with ALL LOWER-CASED letters combined with a \' .' +
-          ' \'\n\nExample:\njane.smith',
+        message: 'Please use the " firstname.lastname " naming convention with ALL LOWER-CASED letters combined with a \' .'
+          + ' \'\n\nExample:\njane.smith',
       });
       setErrorModal(true);
       return;
@@ -146,7 +148,7 @@ const UserRegistration = (props) => {
     <FlexContainer
       id="user-registration-container"
       flexDirection="column"
-      width="40%"
+      width="38%"
       height="100%"
     >
       <CenteredHeader2>User Registration</CenteredHeader2>

@@ -7,7 +7,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import Done from '@material-ui/icons/Done';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import VpnKey from '@material-ui/icons/VpnKey';
-import { CenteredHeader1, ColumnFlexBox, FullContainer } from './styles';
+import { CenteredHeader1, FlexContainer, FullContainer } from './styles';
 
 const styles = theme => ({
   icon: {
@@ -152,9 +152,16 @@ const SignUp = (props) => {
     userinfo.complete ? <Redirect to="/" />
       : (
         <FullContainer id="signup-container">
-          <ColumnFlexBox>
+          <FlexContainer
+            flexDirection="column"
+            margin="auto"
+          >
             <CenteredHeader1>Agent Registration</CenteredHeader1>
-            <ColumnFlexBox id="signup-input-container">
+            <FlexContainer
+              id="signup-input-container"
+              flexDirection="column"
+              margin="auto"
+            >
               <form onSubmit={submit}>
                 <div className={classes.margin}>
                   <Grid
@@ -243,8 +250,8 @@ const SignUp = (props) => {
                   <Done className={classes.rightIcon} />
                 </Button>
               </form>
-            </ColumnFlexBox>
-          </ColumnFlexBox>
+            </FlexContainer>
+          </FlexContainer>
         </FullContainer>
       )
   );
